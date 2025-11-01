@@ -18,14 +18,18 @@
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
+  <!-- header -->
   <header class="mb-6 flex items-center justify-between gap-4 max-w-5xl mx-auto px-6 pt-6">
     <div>
       <h1 class="text-3xl font-bold text-slate-900 tracking-tight">FIT Weight &amp; Balance</h1>
       <p class="text-sm text-gray-500">Select tail, enter weights, verify limits.</p>
     </div>
   </header>
+
   <div class="max-w-5xl mx-auto p-6">
+    <!-- top cards -->
     <section class="grid md:grid-cols-2 gap-6">
+      <!-- aircraft -->
       <div class="bg-white rounded-2xl shadow-md shadow-slate-200/70 p-5">
         <h2 class="text-xl font-semibold mb-4">Aircraft</h2>
         <div class="grid grid-cols-2 gap-4">
@@ -37,6 +41,8 @@
               <option value="warrior">Piper Warrior</option>
             </select>
           </label>
+
+          <!-- 100i tails -->
           <label class="col-span-2 text-sm hidden" id="label100i">Pilot 100i tail number
             <select id="acSelect100i" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2">
               <option value="">Select…</option>
@@ -50,6 +56,8 @@
               <option value="N661FT">N661FT</option>
             </select>
           </label>
+
+          <!-- Archer tails -->
           <label class="col-span-2 text-sm hidden" id="labelArcher">Piper Archer tail number
             <select id="acSelectArcher" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2">
               <option value="">Select…</option>
@@ -63,6 +71,8 @@
               <option value="N650FT">N650FT</option>
             </select>
           </label>
+
+          <!-- Warrior tails -->
           <label class="col-span-2 text-sm hidden" id="labelWarrior">Piper Warrior tail number
             <select id="acSelectWarrior" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2">
               <option value="">Select…</option>
@@ -93,6 +103,7 @@
               <option value="N642FT">N642FT</option>
             </select>
           </label>
+
           <label class="text-sm">Tail (auto)
             <input id="tail" type="text" readonly class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
           </label>
@@ -113,8 +124,10 @@
           </label>
         </div>
       </div>
+
+      <!-- payload -->
       <div id="payloadCard" class="bg-white rounded-2xl shadow-md shadow-slate-200/70 p-5">
-        <h2 class="text-xl font-semibold mb-4">Payload & fuel</h2>
+        <h2 class="text-xl font-semibold mb-4">Payload &amp; fuel</h2>
         <div class="grid grid-cols-2 gap-4">
           <label class="text-sm">Seats 1+2 total (lb)
             <input id="w12" type="number" step="0.1" value="0" disabled class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 bg-gray-100 cursor-not-allowed" />
@@ -142,6 +155,8 @@
         <p class="mt-3 text-xs text-gray-500">Fuel density = 6.0 lb/gal.</p>
       </div>
     </section>
+
+    <!-- settings floating -->
     <div id="settingsPanel" class="fixed bottom-16 right-6 bg-white shadow-2xl rounded-2xl border border-slate-200 p-4 w-72 space-y-3 hidden">
       <div class="flex items-center justify-between mb-1">
         <p class="text-sm font-semibold">Advanced settings</p>
@@ -170,6 +185,8 @@
     <button id="openSettings" class="fixed bottom-4 right-4 h-11 w-11 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-lg hover:bg-slate-700" title="Advanced settings">
       ⚙️
     </button>
+
+    <!-- results -->
     <section class="mt-6 grid md:grid-cols-3 gap-6">
       <div class="bg-white rounded-2xl shadow-md shadow-slate-200/70 p-5" id="cardRamp">
         <h3 class="text-lg font-semibold mb-1 flex items-center justify-between">
@@ -205,6 +222,8 @@
         </dl>
       </div>
     </section>
+
+    <!-- worksheet -->
     <section class="mt-8 bg-white rounded-2xl shadow-md shadow-slate-200/70 p-5">
       <h2 class="text-xl font-semibold mb-4">Worksheet view</h2>
       <div class="overflow-x-auto">
@@ -218,24 +237,80 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td class="px-3 py-2 border">Basic empty weight</td><td class="px-3 py-2 border text-right" id="tblBEW">–</td><td class="px-3 py-2 border text-right">—</td><td class="px-3 py-2 border text-right" id="tblBEWM">–</td></tr>
-            <tr><td class="px-3 py-2 border">Seats 1+2</td><td class="px-3 py-2 border text-right" id="tbl12W">–</td><td class="px-3 py-2 border text-right" id="tbl12A">–</td><td class="px-3 py-2 border text-right" id="tbl12M">–</td></tr>
-            <tr><td class="px-3 py-2 border">Rear seat</td><td class="px-3 py-2 border text-right" id="tbl34W">–</td><td class="px-3 py-2 border text-right" id="tbl34A">–</td><td class="px-3 py-2 border text-right" id="tbl34M">–</td></tr>
-            <tr><td class="px-3 py-2 border">Fuel start</td><td class="px-3 py-2 border text-right" id="tblFuelW">–</td><td class="px-3 py-2 border text-right" id="tblFuelA">–</td><td class="px-3 py-2 border text-right" id="tblFuelM">–</td></tr>
-            <tr id="rowBag" class="hidden"><td class="px-3 py-2 border">Baggage</td><td class="px-3 py-2 border text-right" id="tblBagW">–</td><td class="px-3 py-2 border text-right" id="tblBagA">–</td><td class="px-3 py-2 border text-right" id="tblBagM">–</td></tr>
-            <tr class="bg-gray-50 font-medium"><td class="px-3 py-2 border">RAMP weight</td><td class="px-3 py-2 border text-right" id="tblRampW">–</td><td class="px-3 py-2 border text-right"></td><td class="px-3 py-2 border text-right" id="tblRampM">–</td></tr>
-            <tr><td class="px-3 py-2 border">Taxi fuel burn</td><td class="px-3 py-2 border text-right" id="tblTaxiW">–</td><td class="px-3 py-2 border text-right" id="tblTaxiA">–</td><td class="px-3 py-2 border text-right" id="tblTaxiM">–</td></tr>
-            <tr class="bg-gray-50 font-medium"><td class="px-3 py-2 border">TAKEOFF weight</td><td class="px-3 py-2 border text-right" id="tblTOW">–</td><td class="px-3 py-2 border text-right"></td><td class="px-3 py-2 border text-right" id="tblTOM">–</td></tr>
-            <tr><td class="px-3 py-2 border">Trip fuel burn</td><td class="px-3 py-2 border text-right" id="tblTripW">–</td><td class="px-3 py-2 border text-right" id="tblTripA">–</td><td class="px-3 py-2 border text-right" id="tblTripM">–</td></tr>
-            <tr class="bg-gray-50 font-medium"><td class="px-3 py-2 border">LANDING weight</td><td class="px-3 py-2 border text-right" id="tblLdgW">–</td><td class="px-3 py-2 border text-right"></td><td class="px-3 py-2 border text-right" id="tblLdgM">–</td></tr>
+            <tr>
+              <td class="px-3 py-2 border">Basic empty weight</td>
+              <td class="px-3 py-2 border text-right" id="tblBEW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblBEWA">—</td>
+              <td class="px-3 py-2 border text-right" id="tblBEWM">–</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2 border">Seats 1+2</td>
+              <td class="px-3 py-2 border text-right" id="tbl12W">–</td>
+              <td class="px-3 py-2 border text-right" id="tbl12A">–</td>
+              <td class="px-3 py-2 border text-right" id="tbl12M">–</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2 border">Rear seat</td>
+              <td class="px-3 py-2 border text-right" id="tbl34W">–</td>
+              <td class="px-3 py-2 border text-right" id="tbl34A">–</td>
+              <td class="px-3 py-2 border text-right" id="tbl34M">–</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2 border">Fuel start</td>
+              <td class="px-3 py-2 border text-right" id="tblFuelW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblFuelA">–</td>
+              <td class="px-3 py-2 border text-right" id="tblFuelM">–</td>
+            </tr>
+            <tr id="rowBag" class="hidden">
+              <td class="px-3 py-2 border">Baggage</td>
+              <td class="px-3 py-2 border text-right" id="tblBagW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblBagA">–</td>
+              <td class="px-3 py-2 border text-right" id="tblBagM">–</td>
+            </tr>
+            <tr class="bg-gray-50 font-medium">
+              <td class="px-3 py-2 border">RAMP weight</td>
+              <td class="px-3 py-2 border text-right" id="tblRampW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblRampA"></td>
+              <td class="px-3 py-2 border text-right" id="tblRampM">–</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2 border">Taxi fuel burn</td>
+              <td class="px-3 py-2 border text-right" id="tblTaxiW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblTaxiA">–</td>
+              <td class="px-3 py-2 border text-right" id="tblTaxiM">–</td>
+            </tr>
+            <tr class="bg-gray-50 font-medium">
+              <td class="px-3 py-2 border">TAKEOFF weight</td>
+              <td class="px-3 py-2 border text-right" id="tblTOW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblTOA"></td>
+              <td class="px-3 py-2 border text-right" id="tblTOM">–</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2 border">Trip fuel burn</td>
+              <td class="px-3 py-2 border text-right" id="tblTripW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblTripA">–</td>
+              <td class="px-3 py-2 border text-right" id="tblTripM">–</td>
+            </tr>
+            <tr class="bg-gray-50 font-medium">
+              <td class="px-3 py-2 border">LANDING weight</td>
+              <td class="px-3 py-2 border text-right" id="tblLdgW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblLdgA"></td>
+              <td class="px-3 py-2 border text-right" id="tblLdgM">–</td>
+            </tr>
           </tbody>
         </table>
       </div>
     </section>
-    <footer class="mt-8 text-xs text-gray-500">Always verify against the actual POH/AFM for the tail number.</footer>
+
+    <footer class="mt-8 text-xs text-gray-500">
+      Always verify against the actual POH/AFM for the tail number.
+    </footer>
   </div>
+
   <script>
     const $ = (id) => document.getElementById(id);
+
+    // 100i
     const FLEET_100I = {
       N652FT: { bew: 1614.2, moment: 140700 },
       N653FT: { bew: 1611.2, moment: 140764.4 },
@@ -246,6 +321,8 @@
       N660FT: { bew: 1617.2, moment: 140871.7 },
       N661FT: { bew: 1617.2, moment: 141029.1 },
     };
+
+    // Archer
     const FLEET_ARCHER = {
       N643FT: { bew: 1712.7, moment: 151527.9 },
       N644FT: { bew: 1709.9, moment: 151602.3 },
@@ -256,6 +333,8 @@
       N649FT: { bew: 1707.2, moment: 151610.4 },
       N650FT: { bew: 1715.2, moment: 151858.4 },
     };
+
+    // Warrior (from your sheet)
     const FLEET_WARRIOR = {
       N602FT: { bew: 1505.0, moment: 129761.1 },
       N603FT: { bew: 1550.0, moment: 136115.3 },
@@ -283,14 +362,25 @@
       N641FT: { bew: 1603.0, moment: 138660.3 },
       N642FT: { bew: 1560.0, moment: 134952.8 },
     };
-    function toNum(v) { const n = parseFloat(v); return Number.isFinite(n) ? n : 0; }
-    function fmt(n) { const d = $("decimals") ? toNum($("decimals").value || 1) : 1; return Number.isFinite(n) ? n.toFixed(d) : "–"; }
+
+    const toNum = (v) => {
+      const n = parseFloat(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+    const fmt = (n) => {
+      const d = $("decimals") ? toNum($("decimals").value || 1) : 1;
+      return Number.isFinite(n) ? n.toFixed(d) : "–";
+    };
+
     function setStatus(elBadge, elCard, ok, reason) {
       if (!elBadge || !elCard) return;
       if (ok) {
         elBadge.textContent = "within limits";
         elBadge.className = "text-xs px-2 py-1 rounded-full bg-green-100 text-green-700";
-        elCard.className = elCard.className.replace("bg-red-50", "").replace("border-red-200", "").replace("border", "");
+        elCard.className = elCard.className
+          .replace("bg-red-50", "")
+          .replace("border-red-200", "")
+          .replace("border", "");
       } else {
         elBadge.textContent = reason || "out of limits";
         elBadge.className = "text-xs px-2 py-1 rounded-full bg-red-100 text-red-700";
@@ -299,13 +389,16 @@
         }
       }
     }
+
     function updateAircraftLabels(tail, type) {
-      const label = tail ? `${tail} (${type === "pilot100i" ? "Piper Pilot 100i" : type === "archer3" ? "Piper Archer III" : "Piper Warrior"})` : "none selected";
-      if ("rampAc" in window) {}
+      const label = tail
+        ? `${tail} (${type === "pilot100i" ? "Piper Pilot 100i" : type === "archer3" ? "Piper Archer III" : "Piper Warrior"})`
+        : "none selected";
       if ($("rampAc")) $("rampAc").textContent = "Aircraft: " + label;
       if ($("toAc")) $("toAc").textContent = "Aircraft: " + label;
       if ($("ldgAc")) $("ldgAc").textContent = "Aircraft: " + label;
     }
+
     function calc() {
       const bew = toNum($("bew").value);
       const bewM = toNum($("bewMoment").value);
@@ -313,13 +406,20 @@
       const arm34 = toNum($("arm34").value);
       const armFuel = toNum($("armFuel").value);
       const bagArm = 142.8;
+
       const w12 = toNum($("w12").value);
       const w34 = toNum($("w34").value);
       const wBag = $("wBag") ? toNum($("wBag").value) : 0;
+
+      // fuel inputs
       let fuelGal = toNum($("fuelStart").value);
-      if (fuelGal > 48) { fuelGal = 48; $("fuelStart").value = 48; }
+      if (fuelGal > 48) {
+        fuelGal = 48;
+        $("fuelStart").value = 48;
+      }
       const taxiGal = toNum($("taxiGal").value);
       let tripGal = toNum($("tripGal").value);
+
       const maxTripPossible = Math.max(fuelGal - taxiGal, 0);
       if (tripGal > maxTripPossible) {
         tripGal = maxTripPossible;
@@ -328,38 +428,54 @@
       } else {
         if ($("tripClampMsg")) $("tripClampMsg").classList.add("hidden");
       }
+
       const rho = $("fuelDensity") ? toNum($("fuelDensity").value || 6.0) : 6.0;
+
+      // limits
       const maxRamp = toNum($("maxRamp").value || 2550);
       const maxTO = toNum($("maxTO").value || 2550);
       const maxLDG = toNum($("maxLDG").value || 2550);
+
+      // weights and moments
       const fuelW = fuelGal * rho;
       const taxiW = taxiGal * rho;
       const tripW = tripGal * rho;
+
       const m12 = w12 * arm12;
       const m34 = w34 * arm34;
       const mFuel = fuelW * armFuel;
+
       const rampW = bew + w12 + w34 + wBag + fuelW;
       const rampM = bewM + m12 + m34 + (wBag * bagArm) + mFuel;
       const rampCG = rampM / (rampW || 1);
+
       const toW = rampW - taxiW;
       const toM = rampM - taxiW * armFuel;
       const toCG = toM / (toW || 1);
+
       const ldgW = toW - tripW;
       const ldgM = toM - tripW * armFuel;
       const ldgCG = ldgM / (ldgW || 1);
+
+      // cards
       $("rampW").textContent = fmt(rampW);
       $("rampM").textContent = fmt(rampM);
       $("rampCG").textContent = fmt(rampCG);
+
       const toOver = toW > maxTO;
       const ldgOver = ldgW > maxLDG;
-      const toCgOut = (toCG < 82 || toCG > 93);
-      const ldgCgOut = (ldgCG < 82 || ldgCG > 93);
+      const toCgOut = toCG < 82 || toCG > 93;
+      const ldgCgOut = ldgCG < 82 || ldgCG > 93;
+
       $("toW").innerHTML = `<div class="text-right"><span class="inline-block ${toOver ? "bg-red-100 text-red-800" : "bg-yellow-100/80"} rounded-full px-2 py-0.5 font-semibold">${fmt(toW)}</span></div>`;
       $("toM").textContent = fmt(toM);
       $("toCG").innerHTML = `<div class="text-right"><span class="inline-block ${toCgOut ? "bg-red-100 text-red-800" : "bg-yellow-100/80"} rounded-full px-2 py-0.5 font-semibold">${fmt(toCG)}</span></div>`;
+
       $("ldgW").innerHTML = `<div class="text-right"><span class="inline-block ${ldgOver ? "bg-red-100 text-red-800" : "bg-yellow-100/80"} rounded-full px-2 py-0.5 font-semibold">${fmt(ldgW)}</span></div>`;
       $("ldgM").textContent = fmt(ldgM);
       $("ldgCG").innerHTML = `<div class="text-right"><span class="inline-block ${ldgCgOut ? "bg-red-100 text-red-800" : "bg-yellow-100/80"} rounded-full px-2 py-0.5 font-semibold">${fmt(ldgCG)}</span></div>`;
+
+      // worksheet (weights/moments)
       $("tblBEW").textContent = fmt(bew);
       $("tblBEWM").textContent = fmt(bewM);
       $("tbl12W").textContent = fmt(w12);
@@ -386,10 +502,19 @@
       $("tblTripM").textContent = fmt(tripW * armFuel);
       $("tblLdgW").textContent = fmt(ldgW);
       $("tblLdgM").textContent = fmt(ldgM);
+
+      // NEW: fill worksheet arms from computed CGs
+      const bewArm = bew ? (bewM / bew) : null;
+      $("tblBEWA").textContent = bewArm ? fmt(bewArm) : "—";
+      $("tblRampA").textContent = rampW ? fmt(rampCG) : "";
+      $("tblTOA").textContent = toW ? fmt(toCG) : "";
+      $("tblLdgA").textContent = ldgW ? fmt(ldgCG) : "";
+
       setStatus($("rampStatus"), $("cardRamp"), rampW <= maxRamp, "over ramp wt");
       setStatus($("toStatus"), $("cardTO"), !toOver && !toCgOut, toOver ? "over TO wt" : "CG out");
       setStatus($("ldgStatus"), $("cardLDG"), !ldgOver && !ldgCgOut, ldgOver ? "over LDG wt" : "CG out");
     }
+
     function setPayloadDisabled(disabled) {
       const ids = ["w12","w34","fuelStart","taxiGal","tripGal","wBag"];
       ids.forEach((id) => {
@@ -402,11 +527,14 @@
       const card = $("payloadCard");
       if (card) card.classList.toggle("opacity-60", disabled);
     }
+
+    // settings
     const openBtn = $("openSettings");
     const closeBtn = $("closeSettings");
     const panel = $("settingsPanel");
     if (openBtn && panel) openBtn.addEventListener("click", () => panel.classList.toggle("hidden"));
     if (closeBtn && panel) closeBtn.addEventListener("click", () => panel.classList.add("hidden"));
+
     const allowFd = $("allowFuelDensity");
     if (allowFd) {
       allowFd.addEventListener("change", (e) => {
@@ -423,9 +551,13 @@
         }
       });
     }
+
+    // live calc
     document.addEventListener("input", (e) => {
       if (e.target.matches("input")) calc();
     });
+
+    // selectors
     const acType = $("acType");
     const label100i = $("label100i");
     const labelArcher = $("labelArcher");
@@ -435,6 +567,7 @@
     const sel100i = $("acSelect100i");
     const selArcher = $("acSelectArcher");
     const selWarrior = $("acSelectWarrior");
+
     function loadAircraft(type, tail) {
       if (type === "pilot100i") {
         const ac = FLEET_100I[tail];
@@ -478,10 +611,15 @@
       }
       calc();
     }
+
     if (acType) {
       acType.addEventListener("change", (e) => {
         const v = e.target.value;
-        const setMax = (to, ldg, ramp) => { $("maxTO").value = to; $("maxLDG").value = ldg; $("maxRamp").value = ramp; };
+        const setMax = (to, ldg, ramp) => {
+          $("maxTO").value = to;
+          $("maxLDG").value = ldg;
+          $("maxRamp").value = ramp;
+        };
         if (!v) {
           label100i.classList.add("hidden");
           labelArcher.classList.add("hidden");
@@ -536,6 +674,7 @@
         calc();
       });
     }
+
     if (sel100i) {
       sel100i.addEventListener("change", (e) => {
         const tail = e.target.value;
@@ -569,6 +708,8 @@
         loadAircraft("warrior", tail);
       });
     }
+
+    // 48gal button
     const fullBtn = $("fuelFullBtn");
     if (fullBtn) {
       fullBtn.addEventListener("click", () => {
@@ -577,6 +718,8 @@
         calc();
       });
     }
+
+    // initial
     setPayloadDisabled(true);
     updateAircraftLabels(null, null);
     calc();
