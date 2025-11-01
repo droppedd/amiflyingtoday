@@ -919,6 +919,22 @@
       dir: xw > 0 ? 'from right' : xw < 0 ? 'from left' : ''
     };
   }
+    // shared red/highlight helper
+  function setDanger(el, isDanger) {
+    if (!el) return;
+    if (isDanger) {
+      el.classList.add("bg-red-100", "border-red-200", "text-red-700");
+      el.classList.remove("bg-gray-50", "border-gray-200");
+    } else {
+      el.classList.remove("bg-red-100", "border-red-200", "text-red-700");
+      // reset based on readonly vs editable
+      if (el.hasAttribute("readonly")) {
+        el.classList.add("bg-gray-50", "border-gray-200");
+      } else {
+        el.classList.add("bg-white", "border-gray-300");
+      }
+    }
+  }
   function setWindAlert(el, isAlert) {
     if (!el) return;
     el.classList.toggle('bg-red-100', isAlert);
@@ -933,43 +949,41 @@
     if (!el) return;
     el.addEventListener('input', handleDepChange);
   });
-function handleDepChange() {
-  const depTempEl = document.getElementById('depTemp');
-  const depPressEl = document.getElementById('depPress');
-  const depFieldElevEl = document.getElementById('depFieldElev');
-  const depRwEl = document.getElementById('depRw');
-  const depWindDirEl = document.getElementById('depWindDir');
-  const depWindSpdEl = document.getElementById('depWindSpd');
-  const depGustEl = document.getElementById('depGust');
-  const depHWEl = document.getElementById('depHW');
-  const depXWEl = document.getElementById('depXW');
-  const depXWDirEl = document.getElementById('depXWDir');
+  function handleDepChange() {
+    const t = parseFloat(document.getElementById('depTemp').value);
+    const p = parseFloat(document.getElementById('depPress').value);
+    const fe = parseFloat(document.getElementById('depFieldElev').value);
+    const rw = parseFloat(document.getElementById('depRw').value);
+    const wd = parseFloat(document.getElementById('depWindDir').value);
+    const ws = parseFloat(document.getElementById('depWindSpd').value);
+    const gf = parseFloat(document.getElementById('depGust').value) || 0;
 
-  const t = parseFloat(depTempEl.value);
-  const p = parseFloat(depPressEl.value);
-  const fe = parseFloat(depFieldElevEl.value);
-  const rw = parseFloat(depRwEl.value);
-  const wd = parseFloat(depWindDirEl.value);
-  const ws = parseFloat(depWindSpdEl.value);
-  const gf = parseFloat(depGustEl.value) || 0;
+    const pa = computePA(fe, p);
+    document.getElementById('depPA').value = pa || pa === 0 ? Math.round(pa) : '';
+    document.getElementById('depDA').value = (pa || pa === 0) ? computeDA(pa, t) : '';
 
-  const pa = computePA(fe, p);
-  document.getElementById('depPA').value = pa || pa === 0 ? Math.round(pa) : '';
-  document.getElementById('depDA').value = (pa || pa === 0) ? computeDA(pa, t) : '';
+    const wcalc = computeWind(rw, wd, ws, gf);
+    const hwEl = document.getElementById('depHW');
+    const xwEl = document.getElementById('depXW');
+    const windSpdEl = document.getElementById('depWindSpd');
+    const gustEl = document.getElementById('depGust');
 
-  const wcalc = computeWind(rw, wd, ws, gf);
-  depHWEl.value = wcalc.headwind || 0;
-  depXWEl.value = wcalc.crosswind || 0;
-  depXWDirEl.value = wcalc.dir;
+    hwEl.value = wcalc.headwind || 0;
+    xwEl.value = wcalc.crosswind || 0;
+    document.getElementById('depXWDir').value = wcalc.dir;
 
-  // alerts
-  // 1) sustained wind over 15
-  setWindAlert(depWindSpdEl, ws > 15);
-  // 2) crosswind over 12
-  setWindAlert(depXWEl, wcalc.crosswind > 12);
-  // 3) gust factor over 10
-  setWindAlert(depGustEl, gf > 10);
-}
+    // thresholds
+    const tooWindy = (ws || 0) > 15;
+    const tooGusty = gf > 10;
+    const tooXW = (wcalc.crosswind || 0) > 12;
+    const tailwind = (wcalc.headwind || 0) < 0;
+
+    setDanger(windSpdEl, tooWindy);
+    setDanger(gustEl, tooGusty);
+    setDanger(xwEl, tooXW);
+    setDanger(hwEl, tailwind);
+  }
+
   // arrival inputs
   const arrInputs = ['arrTemp','arrPress','arrFieldElev','arrRw','arrWindDir','arrWindSpd','arrGust'];
   arrInputs.forEach(id => {
@@ -977,40 +991,39 @@ function handleDepChange() {
     if (!el) return;
     el.addEventListener('input', handleArrChange);
   });
-function handleArrChange() {
-  const arrTempEl = document.getElementById('arrTemp');
-  const arrPressEl = document.getElementById('arrPress');
-  const arrFieldElevEl = document.getElementById('arrFieldElev');
-  const arrRwEl = document.getElementById('arrRw');
-  const arrWindDirEl = document.getElementById('arrWindDir');
-  const arrWindSpdEl = document.getElementById('arrWindSpd');
-  const arrGustEl = document.getElementById('arrGust');
-  const arrHWEl = document.getElementById('arrHW');
-  const arrXWEl = document.getElementById('arrXW');
-  const arrXWDirEl = document.getElementById('arrXWDir');
+  function handleArrChange() {
+    const t = parseFloat(document.getElementById('arrTemp').value);
+    const p = parseFloat(document.getElementById('arrPress').value);
+    const fe = parseFloat(document.getElementById('arrFieldElev').value);
+    const rw = parseFloat(document.getElementById('arrRw').value);
+    const wd = parseFloat(document.getElementById('arrWindDir').value);
+    const ws = parseFloat(document.getElementById('arrWindSpd').value);
+    const gf = parseFloat(document.getElementById('arrGust').value) || 0;
 
-  const t = parseFloat(arrTempEl.value);
-  const p = parseFloat(arrPressEl.value);
-  const fe = parseFloat(arrFieldElevEl.value);
-  const rw = parseFloat(arrRwEl.value);
-  const wd = parseFloat(arrWindDirEl.value);
-  const ws = parseFloat(arrWindSpdEl.value);
-  const gf = parseFloat(arrGustEl.value) || 0;
+    const pa = computePA(fe, p);
+    document.getElementById('arrPA').value = pa || pa === 0 ? Math.round(pa) : '';
+    document.getElementById('arrDA').value = (pa || pa === 0) ? computeDA(pa, t) : '';
 
-  const pa = computePA(fe, p);
-  document.getElementById('arrPA').value = pa || pa === 0 ? Math.round(pa) : '';
-  document.getElementById('arrDA').value = (pa || pa === 0) ? computeDA(pa, t) : '';
+    const wcalc = computeWind(rw, wd, ws, gf);
+    const hwEl = document.getElementById('arrHW');
+    const xwEl = document.getElementById('arrXW');
+    const windSpdEl = document.getElementById('arrWindSpd');
+    const gustEl = document.getElementById('arrGust');
 
-  const wcalc = computeWind(rw, wd, ws, gf);
-  arrHWEl.value = wcalc.headwind || 0;
-  arrXWEl.value = wcalc.crosswind || 0;
-  arrXWDirEl.value = wcalc.dir;
+    hwEl.value = wcalc.headwind || 0;
+    xwEl.value = wcalc.crosswind || 0;
+    document.getElementById('arrXWDir').value = wcalc.dir;
 
-  // alerts
-  setWindAlert(arrWindSpdEl, ws > 15);
-  setWindAlert(arrXWEl, wcalc.crosswind > 12);
-  setWindAlert(arrGustEl, gf > 10);
-}
+    const tooWindy = (ws || 0) > 15;
+    const tooGusty = gf > 10;
+    const tooXW = (wcalc.crosswind || 0) > 12;
+    const tailwind = (wcalc.headwind || 0) < 0;
+
+    setDanger(windSpdEl, tooWindy);
+    setDanger(gustEl, tooGusty);
+    setDanger(xwEl, tooXW);
+    setDanger(hwEl, tailwind);
+  }
 
 
   // hook into W/B calc that runs earlier
