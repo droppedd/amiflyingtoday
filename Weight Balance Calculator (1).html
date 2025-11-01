@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FIT Weight & Balance</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+    input[readonly] { background: #f9fafb; cursor: not-allowed; }
+    @media print {
+      body { background: #fff; }
+      header, .no-print { display: none !important; }
+      table { font-size: 11px; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <!-- header -->
+<header class="w-full mb-6 bg-[#a41611]">
+  <div class="max-w-6xl mx-auto px-6 pt-6 pb-4 flex items-center justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-slate-50 tracking-tight drop-shadow-sm">FIT Weight &amp; Balance</h1>
+      <p class="text-sm text-slate-100/80">Select tail, enter weights, verify limits.</p>
+    </div>
+    <div class="hidden md:flex items-center justify-end w-[420px]">
+      <div class="bg-slate-600/95 rounded-full px-2 py-2 flex gap-3 w-full justify-between">
+        <button id="nav-wb" class="flex-1 rounded-2xl bg-slate-100 text-slate-900 text-sm font-semibold py-2">W/B</button>
+        <button id="nav-alt" class="flex-1 rounded-2xl bg-slate-500/60 text-slate-50 text-sm font-medium py-2">Altitude</button>
+        <button id="nav-wind" class="flex-1 rounded-2xl bg-slate-500/60 text-slate-50 text-sm font-medium py-2">Winds</button>
+      </div>
+    </div>
+  </div>
+  <div class="w-full h-[14px] bg-[#8d140f]"></div>
+</header>
+
+<div id="wbPage" class="max-w-5xl mx-auto p-6">
+    <!-- top cards -->
+    <section class="grid md:grid-cols-2 gap-6">
+      <!-- aircraft -->
+      <div class="bg-white rounded-2xl shadow-md shadow-slate-200/70 p-5">
+        <h2 class="text-xl font-semibold mb-4">Aircraft</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <label class="col-span-2 text-sm">Aircraft type
+            <select id="acType" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2">
+              <option value="" selected>Select…</option>
+              <option value="pilot100i">Piper Pilot 100i</option>
+              <option value="archer3">Piper Archer III</option>
+              <option value="warrior">Piper Warrior</option>
+            </select>
+          </label>
+
+          <!-- 100i tails -->
+          <label class="col-span-2 text-sm hidden" id="label100i">Pilot 100i tail number
+            <select id="acSelect100i" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2">
+              <option value="">Select…</option>
+              <option value="N652FT">N652FT</option>
+              <option value="N653FT">N653FT</option>
+              <option value="N654FT">N654FT</option>
+              <option value="N656FT">N656FT</option>
+              <option value="N658FT">N658FT</option>
+              <option value="N659FT">N659FT</option>
+              <option value="N660FT">N660FT</option>
+              <option value="N661FT">N661FT</option>
+            </select>
+          </label>
+
+          <!-- Archer tails -->
+          <label class="col-span-2 text-sm hidden" id="labelArcher">Piper Archer tail number
+            <select id="acSelectArcher" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2">
+              <option value="">Select…</option>
+              <option value="N643FT">N643FT</option>
+              <option value="N644FT">N644FT</option>
+              <option value="N645FT">N645FT</option>
+              <option value="N646FT">N646FT</option>
+              <option value="N647FT">N647FT</option>
+              <option value="N648FT">N648FT</option>
+              <option value="N649FT">N649FT</option>
+              <option value="N650FT">N650FT</option>
+            </select>
+          </label>
+
+          <!-- Warrior tails -->
+          <label class="col-span-2 text-sm hidden" id="labelWarrior">Piper Warrior tail number
+            <select id="acSelectWarrior" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2">
+              <option value="">Select…</option>
+              <option value="N602FT">N602FT</option>
+              <option value="N603FT">N603FT</option>
+              <option value="N604FT">N604FT</option>
+              <option value="N607FT">N607FT</option>
+              <option value="N608FT">N608FT</option>
+              <option value="N609FT">N609FT</option>
+              <option value="N612FT">N612FT</option>
+              <option value="N615FT">N615FT</option>
+              <option value="N618FT">N618FT</option>
+              <option value="N621FT">N621FT</option>
+              <option value="N623FT">N623FT</option>
+              <option value="N624FT">N624FT</option>
+              <option value="N625FT">N625FT</option>
+              <option value="N627FT">N627FT</option>
+              <option value="N628FT">N628FT</option>
+              <option value="N629FT">N629FT</option>
+              <option value="N631FT">N631FT</option>
+              <option value="N635FT">N635FT</option>
+              <option value="N636FT">N636FT</option>
+              <option value="N637FT">N637FT</option>
+              <option value="N638FT">N638FT</option>
+              <option value="N639FT">N639FT</option>
+              <option value="N640FT">N640FT</option>
+              <option value="N641FT">N641FT</option>
+              <option value="N642FT">N642FT</option>
+            </select>
+          </label>
+
+          <label class="text-sm">Tail (auto)
+            <input id="tail" type="text" readonly class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label class="text-sm">BEW (lb)
+            <input id="bew" type="number" readonly class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label class="text-sm">BEW moment
+            <input id="bewMoment" type="number" readonly class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label class="text-sm">Arm front (1+2)
+            <input id="arm12" type="number" readonly class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label class="text-sm">Arm rear
+            <input id="arm34" type="number" readonly class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label class="text-sm">Arm fuel
+            <input id="armFuel" type="number" readonly class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+        </div>
+      </div>
+
+      <!-- payload -->
+      <div id="payloadCard" class="bg-white rounded-2xl shadow-md shadow-slate-200/70 p-5">
+        <h2 class="text-xl font-semibold mb-4">Payload &amp; fuel</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <label class="text-sm">Seats 1+2 total (lb)
+            <input id="w12" type="number" step="0.1" value="0" disabled class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 bg-gray-100 cursor-not-allowed" />
+          </label>
+          <label class="text-sm">Rear seat (lb)
+            <input id="w34" type="number" step="0.1" value="0" disabled class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 bg-gray-100 cursor-not-allowed" />
+          </label>
+          <label class="text-sm">Fuel start (gal)
+            <div class="mt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <input id="fuelStart" type="number" step="0.1" value="0" disabled class="sm:flex-[0.8] min-w-0 rounded-xl border border-gray-300 px-3 py-2 bg-gray-100 cursor-not-allowed" />
+              <button type="button" id="fuelFullBtn" class="sm:flex-[0.24] shrink-0 rounded-full border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50">48</button>
+            </div>
+          </label>
+          <label class="text-sm hidden" id="bagLabel">Baggage (lb)
+            <input id="wBag" type="number" step="0.1" value="0" disabled class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 bg-gray-100 cursor-not-allowed" />
+          </label>
+          <label class="text-sm">Taxi fuel (gal)
+            <input id="taxiGal" type="number" step="0.1" value="1.3" disabled class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 bg-gray-100 cursor-not-allowed" />
+          </label>
+          <label class="text-sm">Trip fuel (gal)
+            <input id="tripGal" type="number" step="0.1" value="10" disabled class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 bg-gray-100 cursor-not-allowed" />
+            <p id="tripClampMsg" class="mt-1 text-[0.65rem] text-amber-500 hidden">Trip fuel reduced to max usable.</p>
+          </label>
+        </div>
+        <p class="mt-3 text-xs text-gray-500">Fuel density = 6.0 lb/gal.</p>
+      </div>
+    </section>
+
+    <!-- settings floating -->
+    <div id="settingsPanel" class="fixed bottom-16 right-6 bg-white shadow-2xl rounded-2xl border border-slate-200 p-4 w-72 space-y-3 hidden">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-sm font-semibold">Advanced settings</p>
+        <button id="closeSettings" class="text-xs text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <label class="flex items-center gap-2 text-xs mb-1">
+        <input id="allowFuelDensity" type="checkbox" class="rounded" />
+        Allow custom fuel density
+      </label>
+      <label class="text-xs block">Fuel density (lb/gal)
+        <input id="fuelDensity" type="number" step="0.01" value="6.0" readonly class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 bg-gray-100" />
+      </label>
+      <label class="text-xs block">Decimal places
+        <input id="decimals" type="number" step="1" value="1" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+      </label>
+      <label class="text-xs block">Max takeoff (lb)
+        <input id="maxTO" type="number" value="2550" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+      </label>
+      <label class="text-xs block">Max landing (lb)
+        <input id="maxLDG" type="number" value="2550" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+      </label>
+      <label class="text-xs block">Max ramp (lb)
+        <input id="maxRamp" type="number" value="2550" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+      </label>
+    </div>
+    <button id="openSettings" class="fixed bottom-4 right-4 h-11 w-11 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-lg hover:bg-slate-700" title="Advanced settings">
+      ⚙️
+    </button>
+
+    <!-- results -->
+    <section class="mt-6 grid md:grid-cols-3 gap-6">
+      <div class="bg-white rounded-2xl shadow-md shadow-slate-200/70 p-5" id="cardRamp">
+        <h3 class="text-lg font-semibold mb-1 flex items-center justify-between">
+          Ramp <span id="rampStatus" class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-500">pending</span>
+        </h3>
+        <p id="rampAc" class="text-[0.65rem] text-gray-400 mb-2">Aircraft: none selected</p>
+        <dl class="space-y-2 text-sm">
+          <div class="flex justify-between"><dt>Total weight</dt><dd id="rampW">–</dd></div>
+          <div class="flex justify-between"><dt>Total moment</dt><dd id="rampM">–</dd></div>
+          <div class="flex justify-between"><dt>CG (in)</dt><dd id="rampCG">–</dd></div>
+        </dl>
+      </div>
+      <div class="bg-white rounded-2xl shadow-md shadow-slate-200/70 p-5" id="cardTO">
+        <h3 class="text-lg font-semibold mb-1 flex items-center justify-between">
+          Takeoff <span id="toStatus" class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-500">pending</span>
+        </h3>
+        <p id="toAc" class="text-[0.65rem] text-gray-400 mb-2">Aircraft: none selected</p>
+        <dl class="space-y-2 text-sm">
+          <div class="flex justify-between"><dt>Total weight</dt><dd id="toW">–</dd></div>
+          <div class="flex justify-between"><dt>Total moment</dt><dd id="toM">–</dd></div>
+          <div class="flex justify-between"><dt>CG (in)</dt><dd id="toCG">–</dd></div>
+        </dl>
+      </div>
+      <div class="bg-white rounded-2xl shadow-md shadow-slate-200/70 p-5" id="cardLDG">
+        <h3 class="text-lg font-semibold mb-1 flex items-center justify-between">
+          Landing <span id="ldgStatus" class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-500">pending</span>
+        </h3>
+        <p id="ldgAc" class="text-[0.65rem] text-gray-400 mb-2">Aircraft: none selected</p>
+        <dl class="space-y-2 text-sm">
+          <div class="flex justify-between"><dt>Total weight</dt><dd id="ldgW">–</dd></div>
+          <div class="flex justify-between"><dt>Total moment</dt><dd id="ldgM">–</dd></div>
+          <div class="flex justify-between"><dt>CG (in)</dt><dd id="ldgCG">–</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- worksheet -->
+    <section class="mt-8 bg-white rounded-2xl shadow-md shadow-slate-200/70 p-5">
+      <h2 class="text-xl font-semibold mb-4">Worksheet view</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm border print:text-xs">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-3 py-2 border text-left">Item</th>
+              <th class="px-3 py-2 border text-right">Weight (lb)</th>
+              <th class="px-3 py-2 border text-right">Arm (in)</th>
+              <th class="px-3 py-2 border text-right">Moment (lb·in)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="px-3 py-2 border">Basic empty weight</td>
+              <td class="px-3 py-2 border text-right" id="tblBEW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblBEWA">—</td>
+              <td class="px-3 py-2 border text-right" id="tblBEWM">–</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2 border">Seats 1+2</td>
+              <td class="px-3 py-2 border text-right" id="tbl12W">–</td>
+              <td class="px-3 py-2 border text-right" id="tbl12A">–</td>
+              <td class="px-3 py-2 border text-right" id="tbl12M">–</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2 border">Rear seat</td>
+              <td class="px-3 py-2 border text-right" id="tbl34W">–</td>
+              <td class="px-3 py-2 border text-right" id="tbl34A">–</td>
+              <td class="px-3 py-2 border text-right" id="tbl34M">–</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2 border">Fuel start</td>
+              <td class="px-3 py-2 border text-right" id="tblFuelW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblFuelA">–</td>
+              <td class="px-3 py-2 border text-right" id="tblFuelM">–</td>
+            </tr>
+            <tr id="rowBag" class="hidden">
+              <td class="px-3 py-2 border">Baggage</td>
+              <td class="px-3 py-2 border text-right" id="tblBagW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblBagA">–</td>
+              <td class="px-3 py-2 border text-right" id="tblBagM">–</td>
+            </tr>
+            <tr class="bg-gray-50 font-medium">
+              <td class="px-3 py-2 border">RAMP weight</td>
+              <td class="px-3 py-2 border text-right" id="tblRampW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblRampA"></td>
+              <td class="px-3 py-2 border text-right" id="tblRampM">–</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2 border">Taxi fuel burn</td>
+              <td class="px-3 py-2 border text-right" id="tblTaxiW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblTaxiA">–</td>
+              <td class="px-3 py-2 border text-right" id="tblTaxiM">–</td>
+            </tr>
+            <tr class="bg-gray-50 font-medium">
+              <td class="px-3 py-2 border">TAKEOFF weight</td>
+              <td class="px-3 py-2 border text-right" id="tblTOW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblTOA"></td>
+              <td class="px-3 py-2 border text-right" id="tblTOM">–</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2 border">Trip fuel burn</td>
+              <td class="px-3 py-2 border text-right" id="tblTripW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblTripA">–</td>
+              <td class="px-3 py-2 border text-right" id="tblTripM">–</td>
+            </tr>
+            <tr class="bg-gray-50 font-medium">
+              <td class="px-3 py-2 border">LANDING weight</td>
+              <td class="px-3 py-2 border text-right" id="tblLdgW">–</td>
+              <td class="px-3 py-2 border text-right" id="tblLdgA"></td>
+              <td class="px-3 py-2 border text-right" id="tblLdgM">–</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="mt-8 text-xs text-gray-500">
+      Always verify against the actual POH/AFM for the tail number.
+    </footer>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    // 100i
+    const FLEET_100I = {
+      N652FT: { bew: 1614.2, moment: 140700 },
+      N653FT: { bew: 1611.2, moment: 140764.4 },
+      N654FT: { bew: 1615.2, moment: 140888.4 },
+      N656FT: { bew: 1609.2, moment: 140308.9 },
+      N658FT: { bew: 1621.2, moment: 141310.5 },
+      N659FT: { bew: 1616.2, moment: 141155.5 },
+      N660FT: { bew: 1617.2, moment: 140871.7 },
+      N661FT: { bew: 1617.2, moment: 141029.1 },
+    };
+
+    // Archer
+    const FLEET_ARCHER = {
+      N643FT: { bew: 1712.7, moment: 151527.9 },
+      N644FT: { bew: 1709.9, moment: 151602.3 },
+      N645FT: { bew: 1708.2, moment: 151641.4 },
+      N646FT: { bew: 1708.2, moment: 151720.1 },
+      N647FT: { bew: 1711.9, moment: 151899.3 },
+      N648FT: { bew: 1713.0, moment: 152089.5 },
+      N649FT: { bew: 1707.2, moment: 151610.4 },
+      N650FT: { bew: 1715.2, moment: 151858.4 },
+    };
+
+    // Warrior (from your sheet)
+    const FLEET_WARRIOR = {
+      N602FT: { bew: 1505.0, moment: 129761.1 },
+      N603FT: { bew: 1550.0, moment: 136115.3 },
+      N604FT: { bew: 1529.3, moment: 129314.4 },
+      N607FT: { bew: 1502.6, moment: 134406.2 },
+      N608FT: { bew: 1524.0, moment: 134721.6 },
+      N609FT: { bew: 1539.0, moment: 135585.9 },
+      N612FT: { bew: 1510.0, moment: 132551.0 },
+      N615FT: { bew: 1520.0, moment: 133569.2 },
+      N618FT: { bew: 1556.4, moment: 134177.1 },
+      N621FT: { bew: 1502.0, moment: 129118.3 },
+      N623FT: { bew: 1539.0, moment: 135417.1 },
+      N624FT: { bew: 1529.0, moment: 137305.2 },
+      N625FT: { bew: 1574.3, moment: 135898.1 },
+      N627FT: { bew: 1551.0, moment: 134428.6 },
+      N628FT: { bew: 1586.0, moment: 136208.2 },
+      N629FT: { bew: 1552.0, moment: 133006.4 },
+      N631FT: { bew: 1541.6, moment: 135234.0 },
+      N635FT: { bew: 1589.0, moment: 137716.5 },
+      N636FT: { bew: 1614.0, moment: 138099.3 },
+      N637FT: { bew: 1591.0, moment: 136678.0 },
+      N638FT: { bew: 1610.0, moment: 138924.4 },
+      N639FT: { bew: 1587.0, moment: 135924.4 },
+      N640FT: { bew: 1606.0, moment: 137947.3 },
+      N641FT: { bew: 1603.0, moment: 138660.3 },
+      N642FT: { bew: 1560.0, moment: 134952.8 },
+    };
+
+    const toNum = (v) => {
+      const n = parseFloat(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+    const fmt = (n) => {
+      const d = $("decimals") ? toNum($("decimals").value || 1) : 1;
+      return Number.isFinite(n) ? n.toFixed(d) : "–";
+    };
+
+    function setStatus(elBadge, elCard, ok, reason) {
+      if (!elBadge || !elCard) return;
+      if (ok) {
+        elBadge.textContent = "within limits";
+        elBadge.className = "text-xs px-2 py-1 rounded-full bg-green-100 text-green-700";
+        elCard.className = elCard.className
+          .replace("bg-red-50", "")
+          .replace("border-red-200", "")
+          .replace("border", "");
+      } else {
+        elBadge.textContent = reason || "out of limits";
+        elBadge.className = "text-xs px-2 py-1 rounded-full bg-red-100 text-red-700";
+        if (!elCard.className.includes("bg-red-50")) {
+          elCard.className += " bg-red-50 border border-red-200";
+        }
+      }
+    }
+
+    function updateAircraftLabels(tail, type) {
+      const label = tail
+        ? `${tail} (${type === "pilot100i" ? "Piper Pilot 100i" : type === "archer3" ? "Piper Archer III" : "Piper Warrior"})`
+        : "none selected";
+      if ($("rampAc")) $("rampAc").textContent = "Aircraft: " + label;
+      if ($("toAc")) $("toAc").textContent = "Aircraft: " + label;
+      if ($("ldgAc")) $("ldgAc").textContent = "Aircraft: " + label;
+    }
+
+    function calc() {
+      const bew = toNum($("bew").value);
+      const bewM = toNum($("bewMoment").value);
+      const arm12 = toNum($("arm12").value);
+      const arm34 = toNum($("arm34").value);
+      const armFuel = toNum($("armFuel").value);
+      const bagArm = 142.8;
+
+      const w12 = toNum($("w12").value);
+      const w34 = toNum($("w34").value);
+      const wBag = $("wBag") ? toNum($("wBag").value) : 0;
+
+      // fuel inputs
+      let fuelGal = toNum($("fuelStart").value);
+      if (fuelGal > 48) {
+        fuelGal = 48;
+        $("fuelStart").value = 48;
+      }
+      const taxiGal = toNum($("taxiGal").value);
+      let tripGal = toNum($("tripGal").value);
+
+      const maxTripPossible = Math.max(fuelGal - taxiGal, 0);
+      if (tripGal > maxTripPossible) {
+        tripGal = maxTripPossible;
+        $("tripGal").value = maxTripPossible.toFixed(1);
+        if ($("tripClampMsg")) $("tripClampMsg").classList.remove("hidden");
+      } else {
+        if ($("tripClampMsg")) $("tripClampMsg").classList.add("hidden");
+      }
+
+      const rho = $("fuelDensity") ? toNum($("fuelDensity").value || 6.0) : 6.0;
+
+      // limits
+      const maxRamp = toNum($("maxRamp").value || 2550);
+      const maxTO = toNum($("maxTO").value || 2550);
+      const maxLDG = toNum($("maxLDG").value || 2550);
+
+      // weights and moments
+      const fuelW = fuelGal * rho;
+      const taxiW = taxiGal * rho;
+      const tripW = tripGal * rho;
+
+      const m12 = w12 * arm12;
+      const m34 = w34 * arm34;
+      const mFuel = fuelW * armFuel;
+
+      const rampW = bew + w12 + w34 + wBag + fuelW;
+      const rampM = bewM + m12 + m34 + (wBag * bagArm) + mFuel;
+      const rampCG = rampM / (rampW || 1);
+
+      const toW = rampW - taxiW;
+      const toM = rampM - taxiW * armFuel;
+      const toCG = toM / (toW || 1);
+
+      const ldgW = toW - tripW;
+      const ldgM = toM - tripW * armFuel;
+      const ldgCG = ldgM / (ldgW || 1);
+
+      // cards
+      $("rampW").textContent = fmt(rampW);
+      $("rampM").textContent = fmt(rampM);
+      $("rampCG").textContent = fmt(rampCG);
+
+      const toOver = toW > maxTO;
+      const ldgOver = ldgW > maxLDG;
+      const toCgOut = toCG < 82 || toCG > 93;
+      const ldgCgOut = ldgCG < 82 || ldgCG > 93;
+
+      $("toW").innerHTML = `<div class="text-right"><span class="inline-block ${toOver ? "bg-red-100 text-red-800" : "bg-yellow-100/80"} rounded-full px-2 py-0.5 font-semibold">${fmt(toW)}</span></div>`;
+      $("toM").textContent = fmt(toM);
+      $("toCG").innerHTML = `<div class="text-right"><span class="inline-block ${toCgOut ? "bg-red-100 text-red-800" : "bg-yellow-100/80"} rounded-full px-2 py-0.5 font-semibold">${fmt(toCG)}</span></div>`;
+
+      $("ldgW").innerHTML = `<div class="text-right"><span class="inline-block ${ldgOver ? "bg-red-100 text-red-800" : "bg-yellow-100/80"} rounded-full px-2 py-0.5 font-semibold">${fmt(ldgW)}</span></div>`;
+      $("ldgM").textContent = fmt(ldgM);
+      $("ldgCG").innerHTML = `<div class="text-right"><span class="inline-block ${ldgCgOut ? "bg-red-100 text-red-800" : "bg-yellow-100/80"} rounded-full px-2 py-0.5 font-semibold">${fmt(ldgCG)}</span></div>`;
+
+      // worksheet (weights/moments)
+      $("tblBEW").textContent = fmt(bew);
+      $("tblBEWM").textContent = fmt(bewM);
+      $("tbl12W").textContent = fmt(w12);
+      $("tbl12A").textContent = fmt(arm12);
+      $("tbl12M").textContent = fmt(m12);
+      $("tbl34W").textContent = fmt(w34);
+      $("tbl34A").textContent = fmt(arm34);
+      $("tbl34M").textContent = fmt(m34);
+      $("tblBagW").textContent = fmt(wBag);
+      $("tblBagA").textContent = wBag ? fmt(bagArm) : "–";
+      $("tblBagM").textContent = wBag ? fmt(wBag * bagArm) : "–";
+      $("tblFuelW").textContent = fmt(fuelW);
+      $("tblFuelA").textContent = fmt(armFuel);
+      $("tblFuelM").textContent = fmt(mFuel);
+      $("tblRampW").textContent = fmt(rampW);
+      $("tblRampM").textContent = fmt(rampM);
+      $("tblTaxiW").textContent = fmt(taxiW);
+      $("tblTaxiA").textContent = fmt(armFuel);
+      $("tblTaxiM").textContent = fmt(taxiW * armFuel);
+      $("tblTOW").textContent = fmt(toW);
+      $("tblTOM").textContent = fmt(toM);
+      $("tblTripW").textContent = fmt(tripW);
+      $("tblTripA").textContent = fmt(armFuel);
+      $("tblTripM").textContent = fmt(tripW * armFuel);
+      $("tblLdgW").textContent = fmt(ldgW);
+      $("tblLdgM").textContent = fmt(ldgM);
+
+      // NEW: fill worksheet arms from computed CGs
+      const bewArm = bew ? (bewM / bew) : null;
+      $("tblBEWA").textContent = bewArm ? fmt(bewArm) : "—";
+      $("tblRampA").textContent = rampW ? fmt(rampCG) : "";
+      $("tblTOA").textContent = toW ? fmt(toCG) : "";
+      $("tblLdgA").textContent = ldgW ? fmt(ldgCG) : "";
+
+      setStatus($("rampStatus"), $("cardRamp"), rampW <= maxRamp, "over ramp wt");
+      setStatus($("toStatus"), $("cardTO"), !toOver && !toCgOut, toOver ? "over TO wt" : "CG out");
+      setStatus($("ldgStatus"), $("cardLDG"), !ldgOver && !ldgCgOut, ldgOver ? "over LDG wt" : "CG out");
+    }
+
+    function setPayloadDisabled(disabled) {
+      const ids = ["w12","w34","fuelStart","taxiGal","tripGal","wBag"];
+      ids.forEach((id) => {
+        const el = $(id);
+        if (!el) return;
+        el.disabled = disabled;
+        el.classList.toggle("bg-gray-100", disabled);
+        el.classList.toggle("cursor-not-allowed", disabled);
+      });
+      const card = $("payloadCard");
+      if (card) card.classList.toggle("opacity-60", disabled);
+    }
+
+    // settings
+    const openBtn = $("openSettings");
+    const closeBtn = $("closeSettings");
+    const panel = $("settingsPanel");
+    if (openBtn && panel) openBtn.addEventListener("click", () => panel.classList.toggle("hidden"));
+    if (closeBtn && panel) closeBtn.addEventListener("click", () => panel.classList.add("hidden"));
+
+    const allowFd = $("allowFuelDensity");
+    if (allowFd) {
+      allowFd.addEventListener("change", (e) => {
+        const fd = $("fuelDensity");
+        if (!fd) return;
+        if (e.target.checked) {
+          fd.readOnly = false;
+          fd.classList.remove("bg-gray-100");
+        } else {
+          fd.readOnly = true;
+          fd.classList.add("bg-gray-100");
+          fd.value = "6.0";
+          calc();
+        }
+      });
+    }
+
+    // live calc
+    document.addEventListener("input", (e) => {
+      if (e.target.matches("input")) calc();
+    });
+
+    // selectors
+    const acType = $("acType");
+    const label100i = $("label100i");
+    const labelArcher = $("labelArcher");
+    const labelWarrior = $("labelWarrior");
+    const bagLabel = $("bagLabel");
+    const rowBag = $("rowBag");
+    const sel100i = $("acSelect100i");
+    const selArcher = $("acSelectArcher");
+    const selWarrior = $("acSelectWarrior");
+
+    function loadAircraft(type, tail) {
+      if (type === "pilot100i") {
+        const ac = FLEET_100I[tail];
+        if (!ac) return;
+        $("tail").value = tail;
+        $("bew").value = ac.bew;
+        $("bewMoment").value = ac.moment;
+        $("arm12").value = 80.5;
+        $("arm34").value = 118.1;
+        $("armFuel").value = 95.0;
+        if (bagLabel) bagLabel.classList.add("hidden");
+        if (rowBag) rowBag.classList.add("hidden");
+        setPayloadDisabled(false);
+        updateAircraftLabels(tail, type);
+      } else if (type === "archer3") {
+        const ac = FLEET_ARCHER[tail];
+        if (!ac) return;
+        $("tail").value = tail;
+        $("bew").value = ac.bew;
+        $("bewMoment").value = ac.moment;
+        $("arm12").value = 80.5;
+        $("arm34").value = 118.1;
+        $("armFuel").value = 95.0;
+        if (bagLabel) bagLabel.classList.remove("hidden");
+        if (rowBag) rowBag.classList.remove("hidden");
+        setPayloadDisabled(false);
+        updateAircraftLabels(tail, type);
+      } else if (type === "warrior") {
+        const ac = FLEET_WARRIOR[tail];
+        if (!ac) return;
+        $("tail").value = tail;
+        $("bew").value = ac.bew;
+        $("bewMoment").value = ac.moment;
+        $("arm12").value = 80.5;
+        $("arm34").value = 118.1;
+        $("armFuel").value = 95.0;
+        if (bagLabel) bagLabel.classList.remove("hidden");
+        if (rowBag) rowBag.classList.remove("hidden");
+        setPayloadDisabled(false);
+        updateAircraftLabels(tail, type);
+      }
+      calc();
+    }
+
+    if (acType) {
+      acType.addEventListener("change", (e) => {
+        const v = e.target.value;
+        const setMax = (to, ldg, ramp) => {
+          $("maxTO").value = to;
+          $("maxLDG").value = ldg;
+          $("maxRamp").value = ramp;
+        };
+        if (!v) {
+          label100i.classList.add("hidden");
+          labelArcher.classList.add("hidden");
+          labelWarrior.classList.add("hidden");
+          if (bagLabel) bagLabel.classList.add("hidden");
+          if (rowBag) rowBag.classList.add("hidden");
+          $("tail").value = "";
+          $("bew").value = "";
+          $("bewMoment").value = "";
+          setPayloadDisabled(true);
+          updateAircraftLabels(null, null);
+          calc();
+          return;
+        }
+        if (v === "pilot100i") {
+          label100i.classList.remove("hidden");
+          labelArcher.classList.add("hidden");
+          labelWarrior.classList.add("hidden");
+          if (bagLabel) bagLabel.classList.add("hidden");
+          if (rowBag) rowBag.classList.add("hidden");
+          $("tail").value = "";
+          $("bew").value = "";
+          $("bewMoment").value = "";
+          setPayloadDisabled(true);
+          updateAircraftLabels(null, null);
+          setMax(2550, 2550, 2550);
+        } else if (v === "archer3") {
+          labelArcher.classList.remove("hidden");
+          label100i.classList.add("hidden");
+          labelWarrior.classList.add("hidden");
+          if (bagLabel) bagLabel.classList.remove("hidden");
+          if (rowBag) rowBag.classList.remove("hidden");
+          $("tail").value = "";
+          $("bew").value = "";
+          $("bewMoment").value = "";
+          setPayloadDisabled(true);
+          updateAircraftLabels(null, null);
+          setMax(2550, 2550, 2550);
+        } else if (v === "warrior") {
+          labelWarrior.classList.remove("hidden");
+          label100i.classList.add("hidden");
+          labelArcher.classList.add("hidden");
+          if (bagLabel) bagLabel.classList.remove("hidden");
+          if (rowBag) rowBag.classList.remove("hidden");
+          $("tail").value = "";
+          $("bew").value = "";
+          $("bewMoment").value = "";
+          setPayloadDisabled(true);
+          updateAircraftLabels(null, null);
+          setMax(2440, 2440, 2440);
+        }
+        calc();
+      });
+    }
+
+    if (sel100i) {
+      sel100i.addEventListener("change", (e) => {
+        const tail = e.target.value;
+        if (!tail) {
+          setPayloadDisabled(true);
+          updateAircraftLabels(null, null);
+          return;
+        }
+        loadAircraft("pilot100i", tail);
+      });
+    }
+    if (selArcher) {
+      selArcher.addEventListener("change", (e) => {
+        const tail = e.target.value;
+        if (!tail) {
+          setPayloadDisabled(true);
+          updateAircraftLabels(null, null);
+          return;
+        }
+        loadAircraft("archer3", tail);
+      });
+    }
+    if (selWarrior) {
+      selWarrior.addEventListener("change", (e) => {
+        const tail = e.target.value;
+        if (!tail) {
+          setPayloadDisabled(true);
+          updateAircraftLabels(null, null);
+          return;
+        }
+        loadAircraft("warrior", tail);
+      });
+    }
+
+    // 48gal button
+    const fullBtn = $("fuelFullBtn");
+    if (fullBtn) {
+      fullBtn.addEventListener("click", () => {
+        if ($("fuelStart").disabled) return;
+        $("fuelStart").value = 48;
+        calc();
+      });
+    }
+
+    // initial
+    setPayloadDisabled(true);
+    updateAircraftLabels(null, null);
+    calc();
+  </script>
+  <!-- DEP/ARV page -->
+  <div id="depPage" class="max-w-5xl mx-auto p-6 hidden">
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- departure data -->
+      <div class="bg-white rounded-2xl shadow-md shadow-slate-200/70 p-5">
+        <h2 class="text-xl font-semibold mb-4 flex items-center justify-between">Departure data <span id="depToldBadge" class="text-[0.6rem] px-2 py-1 rounded-full bg-slate-100 text-slate-400">TOLD not loaded</span></h2>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <label>Temp (°C)
+            <input id="depTemp" type="number" step="0.1" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label>Pressure (inHg)
+            <input id="depPress" type="number" step="0.01" min="28" max="31" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label class="col-span-2">Takeoff weight (lb)
+            <input id="depTOW" type="number" readonly class="mt-1 w-full rounded-xl border border-dashed border-gray-200 px-3 py-2 bg-gray-50 text-gray-400 text-sm" value="Fill out W/B page first" />
+          </label>
+          <label>Field elevation (ft)
+            <input id="depFieldElev" type="number" step="1" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label>Pressure altitude (ft)
+            <input id="depPA" type="number" readonly class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 bg-gray-50" />
+          </label>
+          <label>Density altitude (ft)
+            <input id="depDA" type="number" readonly class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 bg-gray-50" />
+          </label>
+          <div></div>
+          <label>Runway (e.g. 10)
+            <input id="depRw" type="number" step="1" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label>Wind dir (°)
+            <input id="depWindDir" type="number" step="1" min="0" max="360" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label>Wind spd (kt)
+            <input id="depWindSpd" type="number" step="0.1" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label>Gust factor (kt)
+            <input id="depGust" type="number" step="0.1" value="0" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label>Headwind (kt)
+            <input id="depHW" type="number" readonly class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 bg-gray-50" />
+          </label>
+          <label>Crosswind (kt)
+            <input id="depXW" type="number" readonly class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 bg-gray-50" />
+          </label>
+          <label>Dir
+            <input id="depXWDir" type="text" readonly class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 bg-gray-50 text-sm" />
+          </label>
+        </div>
+      </div>
+      <!-- arrival data -->
+      <div class="bg-white rounded-2xl shadow-md shadow-slate-200/70 p-5">
+        <h2 class="text-xl font-semibold mb-4 flex items-center justify-between">Arrival data <span id="arrToldBadge" class="text-[0.6rem] px-2 py-1 rounded-full bg-slate-100 text-slate-400">TOLD not loaded</span></h2>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <label>Temp (°C)
+            <input id="arrTemp" type="number" step="0.1" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label>Pressure (inHg)
+            <input id="arrPress" type="number" step="0.01" min="28" max="31" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label class="col-span-2">Landing weight (lb)
+            <input id="arrLDW" type="number" readonly class="mt-1 w-full rounded-xl border border-dashed border-gray-200 px-3 py-2 bg-gray-50 text-gray-400 text-sm" value="Fill out W/B page first" />
+          </label>
+          <label>Field elevation (ft)
+            <input id="arrFieldElev" type="number" step="1" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label>Pressure altitude (ft)
+            <input id="arrPA" type="number" readonly class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 bg-gray-50" />
+          </label>
+          <label>Density altitude (ft)
+            <input id="arrDA" type="number" readonly class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 bg-gray-50" />
+          </label>
+          <div></div>
+          <label>Runway (e.g. 28)
+            <input id="arrRw" type="number" step="1" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label>Wind dir (°)
+            <input id="arrWindDir" type="number" step="1" min="0" max="360" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label>Wind spd (kt)
+            <input id="arrWindSpd" type="number" step="0.1" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label>Gust factor (kt)
+            <input id="arrGust" type="number" step="0.1" value="0" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2" />
+          </label>
+          <label>Headwind (kt)
+            <input id="arrHW" type="number" readonly class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 bg-gray-50" />
+          </label>
+          <label>Crosswind (kt)
+            <input id="arrXW" type="number" readonly class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 bg-gray-50" />
+          </label>
+          <label>Dir
+            <input id="arrXWDir" type="text" readonly class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 bg-gray-50 text-sm" />
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // nav page toggles
+    const navWB = document.getElementById('nav-wb');
+    const navAlt = document.getElementById('nav-alt');
+    const navWind = document.getElementById('nav-wind');
+    const wbPage = document.getElementById('wbPage');
+    const depPage = document.getElementById('depPage');
+    function setActive(tab){
+      [navWB, navAlt, navWind].forEach(btn=>{
+        if(!btn) return;
+        btn.classList.remove('bg-slate-100','text-slate-900','font-semibold');
+        btn.classList.add('bg-slate-500/60','text-slate-50','font-medium');
+      });
+      if(tab){
+        tab.classList.add('bg-slate-100','text-slate-900','font-semibold');
+        tab.classList.remove('bg-slate-500/60','text-slate-50');
+      }
+    }
+    if(navWB){
+      navWB.addEventListener('click',()=>{
+        wbPage.classList.remove('hidden');
+        depPage.classList.add('hidden');
+        setActive(navWB);
+      });
+    }
+    if(navAlt){
+      navAlt.addEventListener('click',()=>{
+        wbPage.classList.add('hidden');
+        depPage.classList.remove('hidden');
+        setActive(navAlt);
+      });
+    }
+    // winds tab will eventually open depPage too for now
+    if(navWind){
+      navWind.addEventListener('click',()=>{
+        wbPage.classList.add('hidden');
+        depPage.classList.remove('hidden');
+        setActive(navWind);
+      });
+    }
+
+    // shared helper: compute PA & DA
+    function computePA(fieldElev, press){
+      if(!press) return fieldElev || 0;
+      return (fieldElev||0) + (29.92 - press) * 1000;
+    }
+    function computeDA(pa, tempC){
+      const isaC = 15 - (pa/1000)*2; // approx lapse 2C/1000ft
+      if(!tempC && tempC!==0) return pa;
+      return Math.round(pa + 120*(tempC - isaC));
+    }
+    function computeWind(runway, windDir, windSpd, gust){
+      const rwHdg = runway ? runway*10 : 0;
+      const v = (windSpd||0) + (gust||0);
+      const diff = ( (windDir||0) - rwHdg ) * Math.PI/180;
+      const hw = v * Math.cos(diff);
+      const xw = v * Math.sin(diff);
+      return {
+        headwind: Math.round(hw*10)/10,
+        crosswind: Math.abs(Math.round(xw*10)/10),
+        dir: xw>0 ? 'from right' : xw<0 ? 'from left' : ''
+      };
+    }
+
+    // departure inputs
+    const depInputs = ['depTemp','depPress','depFieldElev','depRw','depWindDir','depWindSpd','depGust'];
+    depInputs.forEach(id=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('input',()=>{
+        const t = parseFloat(document.getElementById('depTemp').value);
+        const p = parseFloat(document.getElementById('depPress').value);
+        const fe = parseFloat(document.getElementById('depFieldElev').value);
+        const pa = computePA(fe, p);
+        document.getElementById('depPA').value = pa ? Math.round(pa) : '';
+        document.getElementById('depDA').value = (pa||pa===0) ? computeDA(pa, t) : '';
+        const rw = parseFloat(document.getElementById('depRw').value);
+        const wd = parseFloat(document.getElementById('depWindDir').value);
+        const ws = parseFloat(document.getElementById('depWindSpd').value);
+        const gf = parseFloat(document.getElementById('depGust').value)||0;
+        const wcalc = computeWind(rw, wd, ws, gf);
+        document.getElementById('depHW').value = wcalc.headwind || 0;
+        document.getElementById('depXW').value = wcalc.crosswind || 0;
+        document.getElementById('depXWDir').value = wcalc.dir;
+      });
+    });
+    // arrival inputs
+    const arrInputs = ['arrTemp','arrPress','arrFieldElev','arrRw','arrWindDir','arrWindSpd','arrGust'];
+    arrInputs.forEach(id=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('input',()=>{
+        const t = parseFloat(document.getElementById('arrTemp').value);
+        const p = parseFloat(document.getElementById('arrPress').value);
+        const fe = parseFloat(document.getElementById('arrFieldElev').value);
+        const pa = computePA(fe, p);
+        document.getElementById('arrPA').value = pa ? Math.round(pa) : '';
+        document.getElementById('arrDA').value = (pa||pa===0) ? computeDA(pa, t) : '';
+        const rw = parseFloat(document.getElementById('arrRw').value);
+        const wd = parseFloat(document.getElementById('arrWindDir').value);
+        const ws = parseFloat(document.getElementById('arrWindSpd').value);
+        const gf = parseFloat(document.getElementById('arrGust').value)||0;
+        const wcalc = computeWind(rw, wd, ws, gf);
+        document.getElementById('arrHW').value = wcalc.headwind || 0;
+        document.getElementById('arrXW').value = wcalc.crosswind || 0;
+        document.getElementById('arrXWDir').value = wcalc.dir;
+      });
+    });
+  </script>
+</body>
+</html>
+</html>
