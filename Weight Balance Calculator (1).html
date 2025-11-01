@@ -833,114 +833,192 @@
   </div>
 
   <script>
-    // nav page toggles
-    const navWB = document.getElementById('nav-wb');
-    const navAlt = document.getElementById('nav-alt');
-    const navWind = document.getElementById('nav-wind');
-    const wbPage = document.getElementById('wbPage');
-    const depPage = document.getElementById('depPage');
-    function setActive(tab){
-      [navWB, navAlt, navWind].forEach(btn=>{
-        if(!btn) return;
-        btn.classList.remove('bg-slate-100','text-slate-900','font-semibold');
-        btn.classList.add('bg-slate-500/60','text-slate-50','font-medium');
-      });
-      if(tab){
-        tab.classList.add('bg-slate-100','text-slate-900','font-semibold');
-        tab.classList.remove('bg-slate-500/60','text-slate-50');
+  // nav page toggles
+  const navWB = document.getElementById('nav-wb');
+  const navAlt = document.getElementById('nav-alt'); // now Dep/Arv
+  const navWind = document.getElementById('nav-wind');
+  const wbPage = document.getElementById('wbPage');
+  const depPage = document.getElementById('depPage');
+
+  function setActive(tab) {
+    [navWB, navAlt, navWind].forEach(btn => {
+      if (!btn) return;
+      btn.classList.remove('bg-slate-100', 'text-slate-900', 'font-semibold');
+      btn.classList.add('bg-slate-500/60', 'text-slate-50', 'font-medium');
+    });
+    if (tab) {
+      tab.classList.add('bg-slate-100', 'text-slate-900', 'font-semibold');
+      tab.classList.remove('bg-slate-500/60', 'text-slate-50');
+    }
+  }
+
+  if (navWB) {
+    navWB.addEventListener('click', () => {
+      wbPage.classList.remove('hidden');
+      depPage.classList.add('hidden');
+      setActive(navWB);
+    });
+  }
+  if (navAlt) {
+    navAlt.addEventListener('click', () => {
+      wbPage.classList.add('hidden');
+      depPage.classList.remove('hidden');
+      setActive(navAlt);
+    });
+  }
+  if (navWind) {
+    navWind.addEventListener('click', () => {
+      wbPage.classList.add('hidden');
+      depPage.classList.remove('hidden');
+      setActive(navWind);
+    });
+  }
+
+  // shared helper: compute PA & DA
+  function computePA(fieldElev, press) {
+    if (!press) return fieldElev || 0;
+    return (fieldElev || 0) + (29.92 - press) * 1000;
+  }
+  function computeDA(pa, tempC) {
+    const isaC = 15 - (pa / 1000) * 2;
+    if (tempC === undefined || tempC === null || tempC === '') return pa;
+    return Math.round(pa + 120 * (tempC - isaC));
+  }
+  function computeWind(runway, windDir, windSpd, gust) {
+    const rwHdg = runway ? runway * 10 : 0;
+    const v = (windSpd || 0) + (gust || 0);
+    const diff = ((windDir || 0) - rwHdg) * Math.PI / 180;
+    const hw = v * Math.cos(diff);
+    const xw = v * Math.sin(diff);
+    return {
+      headwind: Math.round(hw * 10) / 10,
+      crosswind: Math.abs(Math.round(xw * 10) / 10),
+      dir: xw > 0 ? 'from right' : xw < 0 ? 'from left' : ''
+    };
+  }
+
+  // departure inputs
+  const depInputs = ['depTemp','depPress','depFieldElev','depRw','depWindDir','depWindSpd','depGust'];
+  depInputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', handleDepChange);
+  });
+
+  function handleDepChange() {
+    const t = parseFloat(document.getElementById('depTemp').value);
+    const p = parseFloat(document.getElementById('depPress').value);
+    const fe = parseFloat(document.getElementById('depFieldElev').value);
+    const rw = parseFloat(document.getElementById('depRw').value);
+    const wd = parseFloat(document.getElementById('depWindDir').value);
+    const ws = parseFloat(document.getElementById('depWindSpd').value);
+    const gf = parseFloat(document.getElementById('depGust').value) || 0;
+
+    // enable/disable Var
+    const depVarBtn = document.getElementById('depWindVar');
+    if (depVarBtn) depVarBtn.disabled = !rw;
+
+    const pa = computePA(fe, p);
+    document.getElementById('depPA').value = pa || pa === 0 ? Math.round(pa) : '';
+    document.getElementById('depDA').value = (pa || pa === 0) ? computeDA(pa, t) : '';
+
+    const wcalc = computeWind(rw, wd, ws, gf);
+    document.getElementById('depHW').value = wcalc.headwind || 0;
+    document.getElementById('depXW').value = wcalc.crosswind || 0;
+    document.getElementById('depXWDir').value = wcalc.dir;
+  }
+
+  // dep Var button
+  const depVarBtn = document.getElementById('depWindVar');
+  if (depVarBtn) {
+    depVarBtn.addEventListener('click', () => {
+      const rw = parseFloat(document.getElementById('depRw').value);
+      if (!rw) return;
+      document.getElementById('depWindDir').value = (rw * 10).toString().padStart(3, '0');
+      handleDepChange();
+    });
+  }
+
+  // arrival inputs
+  const arrInputs = ['arrTemp','arrPress','arrFieldElev','arrRw','arrWindDir','arrWindSpd','arrGust'];
+  arrInputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', handleArrChange);
+  });
+
+  function handleArrChange() {
+    const t = parseFloat(document.getElementById('arrTemp').value);
+    const p = parseFloat(document.getElementById('arrPress').value);
+    const fe = parseFloat(document.getElementById('arrFieldElev').value);
+    const rw = parseFloat(document.getElementById('arrRw').value);
+    const wd = parseFloat(document.getElementById('arrWindDir').value);
+    const ws = parseFloat(document.getElementById('arrWindSpd').value);
+    const gf = parseFloat(document.getElementById('arrGust').value) || 0;
+
+    const arrVarBtn = document.getElementById('arrWindVar');
+    if (arrVarBtn) arrVarBtn.disabled = !rw;
+
+    const pa = computePA(fe, p);
+    document.getElementById('arrPA').value = pa || pa === 0 ? Math.round(pa) : '';
+    document.getElementById('arrDA').value = (pa || pa === 0) ? computeDA(pa, t) : '';
+
+    const wcalc = computeWind(rw, wd, ws, gf);
+    document.getElementById('arrHW').value = wcalc.headwind || 0;
+    document.getElementById('arrXW').value = wcalc.crosswind || 0;
+    document.getElementById('arrXWDir').value = wcalc.dir;
+  }
+
+  const arrVarBtn = document.getElementById('arrWindVar');
+  if (arrVarBtn) {
+    arrVarBtn.addEventListener('click', () => {
+      const rw = parseFloat(document.getElementById('arrRw').value);
+      if (!rw) return;
+      document.getElementById('arrWindDir').value = (rw * 10).toString().padStart(3, '0');
+      handleArrChange();
+    });
+  }
+
+  // hook into W/B calc that runs earlier
+  // after your existing calc() runs, just make sure it also touches these:
+  if (typeof window.calc === 'function') {
+    const origCalc = window.calc;
+    window.calc = function() {
+      origCalc();
+      // pull current W/B weights
+      const toWEl = document.getElementById('tblTOW');
+      const ldgWEl = document.getElementById('tblLdgW');
+      const depTOW = document.getElementById('depTOW');
+      const arrLDW = document.getElementById('arrLDW');
+      const depBadge = document.getElementById('depToldBadge');
+      const arrBadge = document.getElementById('arrToldBadge');
+
+      // read from the computed cards instead is safer:
+      const toCardVal = document.getElementById('toW')?.innerText?.trim();
+      const ldgCardVal = document.getElementById('ldgW')?.innerText?.trim();
+
+      const toValNum = parseFloat(toCardVal);
+      const ldgValNum = parseFloat(ldgCardVal);
+
+      if (depTOW && !Number.isNaN(toValNum)) {
+        depTOW.value = toValNum.toFixed(1);
+        depTOW.classList.remove('text-gray-400');
+        if (depBadge) {
+          depBadge.textContent = 'TOLD linked';
+          depBadge.className = 'text-[0.6rem] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700';
+        }
       }
-    }
-    if(navWB){
-      navWB.addEventListener('click',()=>{
-        wbPage.classList.remove('hidden');
-        depPage.classList.add('hidden');
-        setActive(navWB);
-      });
-    }
-    if(navAlt){
-      navAlt.addEventListener('click',()=>{
-        wbPage.classList.add('hidden');
-        depPage.classList.remove('hidden');
-        setActive(navAlt);
-      });
-    }
-    // winds tab will eventually open depPage too for now
-    if(navWind){
-      navWind.addEventListener('click',()=>{
-        wbPage.classList.add('hidden');
-        depPage.classList.remove('hidden');
-        setActive(navWind);
-      });
-    }
-
-    // shared helper: compute PA & DA
-    function computePA(fieldElev, press){
-      if(!press) return fieldElev || 0;
-      return (fieldElev||0) + (29.92 - press) * 1000;
-    }
-    function computeDA(pa, tempC){
-      const isaC = 15 - (pa/1000)*2; // approx lapse 2C/1000ft
-      if(!tempC && tempC!==0) return pa;
-      return Math.round(pa + 120*(tempC - isaC));
-    }
-    function computeWind(runway, windDir, windSpd, gust){
-      const rwHdg = runway ? runway*10 : 0;
-      const v = (windSpd||0) + (gust||0);
-      const diff = ( (windDir||0) - rwHdg ) * Math.PI/180;
-      const hw = v * Math.cos(diff);
-      const xw = v * Math.sin(diff);
-      return {
-        headwind: Math.round(hw*10)/10,
-        crosswind: Math.abs(Math.round(xw*10)/10),
-        dir: xw>0 ? 'from right' : xw<0 ? 'from left' : ''
-      };
-    }
-
-    // departure inputs
-    const depInputs = ['depTemp','depPress','depFieldElev','depRw','depWindDir','depWindSpd','depGust'];
-    depInputs.forEach(id=>{
-      const el = document.getElementById(id);
-      if(!el) return;
-      el.addEventListener('input',()=>{
-        const t = parseFloat(document.getElementById('depTemp').value);
-        const p = parseFloat(document.getElementById('depPress').value);
-        const fe = parseFloat(document.getElementById('depFieldElev').value);
-        const pa = computePA(fe, p);
-        document.getElementById('depPA').value = pa ? Math.round(pa) : '';
-        document.getElementById('depDA').value = (pa||pa===0) ? computeDA(pa, t) : '';
-        const rw = parseFloat(document.getElementById('depRw').value);
-        const wd = parseFloat(document.getElementById('depWindDir').value);
-        const ws = parseFloat(document.getElementById('depWindSpd').value);
-        const gf = parseFloat(document.getElementById('depGust').value)||0;
-        const wcalc = computeWind(rw, wd, ws, gf);
-        document.getElementById('depHW').value = wcalc.headwind || 0;
-        document.getElementById('depXW').value = wcalc.crosswind || 0;
-        document.getElementById('depXWDir').value = wcalc.dir;
-      });
-    });
-    // arrival inputs
-    const arrInputs = ['arrTemp','arrPress','arrFieldElev','arrRw','arrWindDir','arrWindSpd','arrGust'];
-    arrInputs.forEach(id=>{
-      const el = document.getElementById(id);
-      if(!el) return;
-      el.addEventListener('input',()=>{
-        const t = parseFloat(document.getElementById('arrTemp').value);
-        const p = parseFloat(document.getElementById('arrPress').value);
-        const fe = parseFloat(document.getElementById('arrFieldElev').value);
-        const pa = computePA(fe, p);
-        document.getElementById('arrPA').value = pa ? Math.round(pa) : '';
-        document.getElementById('arrDA').value = (pa||pa===0) ? computeDA(pa, t) : '';
-        const rw = parseFloat(document.getElementById('arrRw').value);
-        const wd = parseFloat(document.getElementById('arrWindDir').value);
-        const ws = parseFloat(document.getElementById('arrWindSpd').value);
-        const gf = parseFloat(document.getElementById('arrGust').value)||0;
-        const wcalc = computeWind(rw, wd, ws, gf);
-        document.getElementById('arrHW').value = wcalc.headwind || 0;
-        document.getElementById('arrXW').value = wcalc.crosswind || 0;
-        document.getElementById('arrXWDir').value = wcalc.dir;
-      });
-    });
-  </script>
+      if (arrLDW && !Number.isNaN(ldgValNum)) {
+        arrLDW.value = ldgValNum.toFixed(1);
+        arrLDW.classList.remove('text-gray-400');
+        if (arrBadge) {
+          arrBadge.textContent = 'TOLD linked';
+          arrBadge.className = 'text-[0.6rem] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700';
+        }
+      }
+    };
+  }
+</script>
 </body>
 </html>
 </html>
