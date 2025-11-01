@@ -19,14 +19,24 @@
 </head>
 <body class="bg-gray-50 text-gray-900">
   <!-- header -->
-  <header class="mb-6 flex items-center justify-between gap-4 max-w-5xl mx-auto px-6 pt-6">
+<header class="w-full mb-6 bg-[#a41611]">
+  <div class="max-w-6xl mx-auto px-6 pt-6 pb-4 flex items-center justify-between gap-4">
     <div>
-      <h1 class="text-3xl font-bold text-slate-900 tracking-tight">FIT Weight &amp; Balance</h1>
-      <p class="text-sm text-gray-500">Select tail, enter weights, verify limits.</p>
+      <h1 class="text-3xl font-bold text-slate-50 tracking-tight drop-shadow-sm">FIT Weight &amp; Balance</h1>
+      <p class="text-sm text-slate-100/80">Select tail, enter weights, verify limits.</p>
     </div>
-  </header>
+    <div class="hidden md:flex items-center justify-end w-[420px]">
+      <div class="bg-slate-600/95 rounded-full px-2 py-2 flex gap-3 w-full justify-between">
+        <button id="nav-wb" class="flex-1 rounded-2xl bg-slate-100 text-slate-900 text-sm font-semibold py-2">W/B</button>
+        <button id="nav-alt" class="flex-1 rounded-2xl bg-slate-500/60 text-slate-50 text-sm font-medium py-2">Altitude</button>
+        <button id="nav-wind" class="flex-1 rounded-2xl bg-slate-500/60 text-slate-50 text-sm font-medium py-2">Winds</button>
+      </div>
+    </div>
+  </div>
+  <div class="w-full h-[14px] bg-[#8d140f]"></div>
+</header>
 
-  <div class="max-w-5xl mx-auto p-6">
+<div class="max-w-5xl mx-auto p-6">
     <!-- top cards -->
     <section class="grid md:grid-cols-2 gap-6">
       <!-- aircraft -->
