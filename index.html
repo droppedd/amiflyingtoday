@@ -1130,129 +1130,121 @@
   }
 </script>
 <script>
-  // ===== ICAO -> METAR lookup for Arrival =====
-  (function () {
-    const $ = (id) => document.getElementById(id);
-    const inp = $('arrIcao');
-    const btn = $('arrIcaoFetch');
-    const out = $('arrMetar');
+/* ========= ICAO -> METAR lookup (CORS-proof) ========= */
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const inp = $('arrIcao');
+  const btn = $('arrIcaoFetch');
+  const out = $('arrMetar');
+  if (!inp || !btn || !out) return;
 
-    if (!inp || !btn || !out) return;
+  // Uniform styling for success/error/neutral
+  function styleIcao(state) {
+    const base = 'w-full rounded-xl border px-3 py-2 tracking-wider uppercase';
+    inp.className =
+      state === 'ok'  ? base + ' bg-emerald-50 border-emerald-200 text-emerald-800' :
+      state === 'err' ? base + ' bg-red-50 border-red-200 text-red-700' :
+                        base + ' border-gray-300';
+  }
 
-    // Style helper: neutral / success / error
-    function styleIcao(state) {
-      const base = 'w-full rounded-xl border px-3 py-2 tracking-wider uppercase';
-      if (state === 'ok') {
-        inp.className = base + ' bg-emerald-50 border-emerald-200 text-emerald-800';
-      } else if (state === 'err') {
-        inp.className = base + ' bg-red-50 border-red-200 text-red-700';
-      } else {
-        inp.className = base + ' border-gray-300';
+  // Sanitize ICAO (AAAA)
+  function sanitize(val) { return (val || '').toUpperCase().replace(/[^A-Z]/g,'').slice(0,4); }
+
+  // Tiny timeout wrapper
+  function fetchWithTimeout(url, ms=9000, opts={}) {
+    const ctrl = new AbortController();
+    const t = setTimeout(()=>ctrl.abort(), ms);
+    return fetch(url, {...opts, signal: ctrl.signal}).finally(()=>clearTimeout(t));
+  }
+
+  // Generic CORS reader (wrap any public URL)
+  function proxy(url) {
+    // r.jina.ai echoes public pages with permissive CORS
+    // Works with both http and https targets.
+    const target = url.replace(/^https?:\/\//,'');
+    return `https://r.jina.ai/http://${target}`;
+  }
+
+  async function getMetar(icao) {
+    const code = sanitize(icao);
+    if (code.length !== 4) throw new Error('bad-icao');
+
+    // 1) Weather.gov (has CORS)
+    try {
+      const u1 = `https://api.weather.gov/stations/${code}/observations/latest?require_qc=false`;
+      const r1 = await fetchWithTimeout(u1, 9000, {headers: {'Accept':'application/ld+json'}});
+      if (r1.ok) {
+        const j = await r1.json();
+        const raw = j?.properties?.rawMessage || j?.properties?.textDescription || '';
+        if (raw && /^[A-Z]{4}\s/.test(raw)) return raw.trim();
       }
-    }
+    } catch(e) { /* continue */ }
 
-    // Fetch with timeout
-    function fetchWithTimeout(url, ms = 8000) {
-      const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort(), ms);
-      return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(t));
-    }
+    // 2) VATSIM text (via proxy to avoid CORS)
+    try {
+      const u2 = proxy(`https://metar.vatsim.net/metar.php?id=${code}`);
+      const r2 = await fetchWithTimeout(u2, 9000);
+      if (r2.ok) {
+        const txt = (await r2.text()).trim();
+        if (/^[A-Z]{4}\s/.test(txt)) return txt;
+      }
+    } catch(e) { /* continue */ }
 
-    // Try Weather.gov first (has CORS), then fallback to tgftp via a CORS reader.
-    async function getMetar(icao) {
-      const code = (icao || '').toUpperCase();
-    
-      // 1) Weather.gov JSON (CORS enabled)
-      try {
-        const u1 = `https://api.weather.gov/stations/${code}/observations/latest?require_qc=false`;
-        const r1 = await fetch(u1, { headers: { 'Accept': 'application/ld+json' } });
-        if (r1.ok) {
-          const j = await r1.json();
-          // raw METAR usually in properties.rawMessage; some stations use properties.textDescription
-          const raw = j?.properties?.rawMessage || j?.properties?.textDescription || '';
-          if (raw && /^[A-Z]{4}\s/.test(raw)) return raw.trim();
-        }
-      } catch (_) { /* continue to fallbacks */ }
-    
-      // 2) NOAA tgftp text via a read-only CORS-friendly fetcher
-      // r.jina.ai returns the body of any public URL with permissive CORS headers.
-      try {
-        const proxy = `https://r.jina.ai/http://tgftp.nws.noaa.gov/data/observations/metar/stations/${code}.TXT`;
-        const r2 = await fetch(proxy);
-        if (r2.ok) {
-          const txt = await r2.text();
-          const lines = txt.trim().split('\n');
-          // The METAR is on the 2nd line in the tgftp file
-          const metar = (lines[1] || '').trim();
-          if (/^[A-Z]{4}\s/.test(metar)) return metar;
-        }
-      } catch (_) { /* continue to final fallback */ }
-    
-      // 3) AviationWeather API via the same CORS reader (sometimes works)
-      try {
-        const proxy2 = `https://r.jina.ai/http://aviationweather.gov/api/data/metar?ids=${code}&format=raw&hours=0&taf=0`;
-        const r3 = await fetch(proxy2);
-        if (r3.ok) {
-          const raw = (await r3.text()).trim();
-          if (/^[A-Z]{4}\s/.test(raw)) return raw;
-        }
-      } catch (_) { /* give up */ }
-    
-      throw new Error('METAR not available');
-    }
+    // 3) NOAA tgftp text (via proxy)
+    try {
+      const u3 = proxy(`https://tgftp.nws.noaa.gov/data/observations/metar/stations/${code}.TXT`);
+      const r3 = await fetchWithTimeout(u3, 9000);
+      if (r3.ok) {
+        const t = await r3.text();
+        const lines = t.trim().split('\n');
+        const metar = (lines[1] || '').trim();
+        if (/^[A-Z]{4}\s/.test(metar)) return metar;
+      }
+    } catch(e) { /* continue */ }
 
-    function sanitizeIcao(val) {
-      return (val || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4);
-    }
+    // 4) AWC raw API (via proxy)
+    try {
+      const u4 = proxy(`https://aviationweather.gov/api/data/metar?ids=${code}&format=raw&hours=0&taf=0`);
+      const r4 = await fetchWithTimeout(u4, 9000);
+      if (r4.ok) {
+        const txt = (await r4.text()).trim();
+        if (/^[A-Z]{4}\s/.test(txt)) return txt;
+      }
+    } catch(e) { /* continue */ }
 
-    async function doLookup() {
-      const code = sanitizeIcao(inp.value);
-      inp.value = code;
+    throw new Error('not-found');
+  }
 
+  async function doLookup() {
+    const code = sanitize(inp.value);
+    inp.value = code;
+    out.value = '';
+    out.placeholder = 'Fetching METAR…';
+    styleIcao(); // neutral while loading
+
+    if (code.length !== 4) { out.placeholder = '—'; return; }
+
+    try {
+      const metar = await getMetar(code);
+      out.value = metar;
+      out.placeholder = '—';
+      styleIcao('ok');
+    } catch {
       out.value = '';
-      styleIcao(); // neutral
-
-      if (code.length !== 4) return;
-
-      // Optimistic loading hint
-      out.placeholder = 'Fetching METAR…';
-
-      try {
-        const metar = await getMetar(code);
-        out.value = metar;
-        out.placeholder = '—';
-        styleIcao('ok');
-
-        // Optional: if you later want to auto-fill arrival Field Elev,
-        // you can call a separate elevation lookup here and write to #arrFieldElev.
-      } catch (err) {
-        out.value = '';
-        out.placeholder = 'Not found';
-        styleIcao('err');
-      }
+      out.placeholder = 'Not found';
+      styleIcao('err');
     }
+  }
 
-    // Events
-    inp.addEventListener('input', () => {
-      inp.value = sanitizeIcao(inp.value);
-      if (inp.value.length === 4) doLookup();
-      else {
-        styleIcao();
-        out.value = '';
-        out.placeholder = '—';
-      }
-    });
-    inp.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        doLookup();
-      }
-    });
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      doLookup();
-    });
-  })();
+  // events
+  inp.addEventListener('input', () => {
+    inp.value = sanitize(inp.value);
+    if (inp.value.length === 4) { doLookup(); }
+    else { styleIcao(); out.value=''; out.placeholder='—'; }
+  });
+  inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); doLookup(); }});
+  btn.addEventListener('click', (e) => { e.preventDefault(); doLookup(); });
+})();
 </script>
 <footer class="w-full bg-[#8d140f]">
     <div class="max-w-6xl mx-auto px-6 py-2 flex items-center justify-between text-[0.6rem] text-slate-100/70">
