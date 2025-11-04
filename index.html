@@ -1158,29 +1158,47 @@
       return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(t));
     }
 
-    // Try the NOAA text endpoint first (usually CORS-friendly for static sites).
+    // Try Weather.gov first (has CORS), then fallback to tgftp via a CORS reader.
     async function getMetar(icao) {
-      const code = icao.toUpperCase();
-      // Endpoint 1: raw text file (two lines: timestamp, METAR)
-      const urlTxt = `https://tgftp.nws.noaa.gov/data/observations/metar/stations/${code}.TXT`;
+      const code = (icao || '').toUpperCase();
+    
+      // 1) Weather.gov JSON (CORS enabled)
       try {
-        const r = await fetchWithTimeout(urlTxt, 8000);
-        if (!r.ok) throw new Error('not ok');
-        const txt = await r.text();
-        // Expect the METAR on the second line
-        const lines = txt.trim().split('\n');
-        const metar = lines.length > 1 ? lines[1].trim() : txt.trim();
-        if (!/^[A-Z]{4}\s/.test(metar)) throw new Error('bad metar');
-        return metar;
-      } catch (_) {
-        // Endpoint 2 (fallback): AWC API, may or may not allow CORS depending on their config
-        const urlApi = `https://aviationweather.gov/api/data/metar?ids=${code}&format=raw&hours=0&taf=0`;
-        const r2 = await fetchWithTimeout(urlApi, 8000);
-        if (!r2.ok) throw new Error('no api');
-        const txt2 = await r2.text();
-        if (!txt2 || !txt2.trim()) throw new Error('empty api');
-        return txt2.trim();
-      }
+        const u1 = `https://api.weather.gov/stations/${code}/observations/latest?require_qc=false`;
+        const r1 = await fetch(u1, { headers: { 'Accept': 'application/ld+json' } });
+        if (r1.ok) {
+          const j = await r1.json();
+          // raw METAR usually in properties.rawMessage; some stations use properties.textDescription
+          const raw = j?.properties?.rawMessage || j?.properties?.textDescription || '';
+          if (raw && /^[A-Z]{4}\s/.test(raw)) return raw.trim();
+        }
+      } catch (_) { /* continue to fallbacks */ }
+    
+      // 2) NOAA tgftp text via a read-only CORS-friendly fetcher
+      // r.jina.ai returns the body of any public URL with permissive CORS headers.
+      try {
+        const proxy = `https://r.jina.ai/http://tgftp.nws.noaa.gov/data/observations/metar/stations/${code}.TXT`;
+        const r2 = await fetch(proxy);
+        if (r2.ok) {
+          const txt = await r2.text();
+          const lines = txt.trim().split('\n');
+          // The METAR is on the 2nd line in the tgftp file
+          const metar = (lines[1] || '').trim();
+          if (/^[A-Z]{4}\s/.test(metar)) return metar;
+        }
+      } catch (_) { /* continue to final fallback */ }
+    
+      // 3) AviationWeather API via the same CORS reader (sometimes works)
+      try {
+        const proxy2 = `https://r.jina.ai/http://aviationweather.gov/api/data/metar?ids=${code}&format=raw&hours=0&taf=0`;
+        const r3 = await fetch(proxy2);
+        if (r3.ok) {
+          const raw = (await r3.text()).trim();
+          if (/^[A-Z]{4}\s/.test(raw)) return raw;
+        }
+      } catch (_) { /* give up */ }
+    
+      throw new Error('METAR not available');
     }
 
     function sanitizeIcao(val) {
