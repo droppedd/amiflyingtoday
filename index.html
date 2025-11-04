@@ -802,6 +802,31 @@
         Arrival Data
         <span id="arrToldBadge" class="text-[0.6rem] px-2 py-1 rounded-full bg-slate-100 text-slate-400">TOLD not loaded</span>
       </h2>
+      
+      <!-- ARRIVAL: ICAO + METAR lookup -->
+      <div class="col-span-2 bg-slate-50 rounded-2xl p-4 mb-4 grid grid-cols-2 gap-4 text-sm">
+        <label class="col-span-1">ICAO (METAR lookup)
+          <div class="flex gap-2 mt-1">
+            <input id="arrIcao" type="text" inputmode="latin" maxlength="4"
+                   placeholder="KMLB"
+                   class="w-full rounded-xl border border-gray-300 px-3 py-2 tracking-wider uppercase"
+                   aria-describedby="arrIcaoHelp"/>
+            <button id="arrIcaoFetch"
+                    class="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50">
+              Fetch
+            </button>
+          </div>
+          <p id="arrIcaoHelp" class="mt-1 text-[0.65rem] text-slate-500">
+            Enter a 4-letter ICAO (e.g., KMLB). Fetches latest METAR.
+          </p>
+        </label>
+      
+        <label class="col-span-1">METAR (read only)
+          <textarea id="arrMetar" rows="3" readonly
+                    class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 bg-gray-50 text-[0.9rem]"
+                    placeholder="—"></textarea>
+        </label>
+      </div>
 
       <!-- temp / pressure / LDW -->
       <div class="col-span-2 bg-slate-50 rounded-2xl p-4 mb-4 grid grid-cols-2 gap-4 text-sm">
@@ -1103,6 +1128,113 @@
       }
     };
   }
+</script>
+<script>
+  // ===== ICAO -> METAR lookup for Arrival =====
+  (function () {
+    const $ = (id) => document.getElementById(id);
+    const inp = $('arrIcao');
+    const btn = $('arrIcaoFetch');
+    const out = $('arrMetar');
+
+    if (!inp || !btn || !out) return;
+
+    // Style helper: neutral / success / error
+    function styleIcao(state) {
+      const base = 'w-full rounded-xl border px-3 py-2 tracking-wider uppercase';
+      if (state === 'ok') {
+        inp.className = base + ' bg-emerald-50 border-emerald-200 text-emerald-800';
+      } else if (state === 'err') {
+        inp.className = base + ' bg-red-50 border-red-200 text-red-700';
+      } else {
+        inp.className = base + ' border-gray-300';
+      }
+    }
+
+    // Fetch with timeout
+    function fetchWithTimeout(url, ms = 8000) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), ms);
+      return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(t));
+    }
+
+    // Try the NOAA text endpoint first (usually CORS-friendly for static sites).
+    async function getMetar(icao) {
+      const code = icao.toUpperCase();
+      // Endpoint 1: raw text file (two lines: timestamp, METAR)
+      const urlTxt = `https://tgftp.nws.noaa.gov/data/observations/metar/stations/${code}.TXT`;
+      try {
+        const r = await fetchWithTimeout(urlTxt, 8000);
+        if (!r.ok) throw new Error('not ok');
+        const txt = await r.text();
+        // Expect the METAR on the second line
+        const lines = txt.trim().split('\n');
+        const metar = lines.length > 1 ? lines[1].trim() : txt.trim();
+        if (!/^[A-Z]{4}\s/.test(metar)) throw new Error('bad metar');
+        return metar;
+      } catch (_) {
+        // Endpoint 2 (fallback): AWC API, may or may not allow CORS depending on their config
+        const urlApi = `https://aviationweather.gov/api/data/metar?ids=${code}&format=raw&hours=0&taf=0`;
+        const r2 = await fetchWithTimeout(urlApi, 8000);
+        if (!r2.ok) throw new Error('no api');
+        const txt2 = await r2.text();
+        if (!txt2 || !txt2.trim()) throw new Error('empty api');
+        return txt2.trim();
+      }
+    }
+
+    function sanitizeIcao(val) {
+      return (val || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4);
+    }
+
+    async function doLookup() {
+      const code = sanitizeIcao(inp.value);
+      inp.value = code;
+
+      out.value = '';
+      styleIcao(); // neutral
+
+      if (code.length !== 4) return;
+
+      // Optimistic loading hint
+      out.placeholder = 'Fetching METAR…';
+
+      try {
+        const metar = await getMetar(code);
+        out.value = metar;
+        out.placeholder = '—';
+        styleIcao('ok');
+
+        // Optional: if you later want to auto-fill arrival Field Elev,
+        // you can call a separate elevation lookup here and write to #arrFieldElev.
+      } catch (err) {
+        out.value = '';
+        out.placeholder = 'Not found';
+        styleIcao('err');
+      }
+    }
+
+    // Events
+    inp.addEventListener('input', () => {
+      inp.value = sanitizeIcao(inp.value);
+      if (inp.value.length === 4) doLookup();
+      else {
+        styleIcao();
+        out.value = '';
+        out.placeholder = '—';
+      }
+    });
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        doLookup();
+      }
+    });
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      doLookup();
+    });
+  })();
 </script>
 <footer class="w-full bg-[#8d140f]">
     <div class="max-w-6xl mx-auto px-6 py-2 flex items-center justify-between text-[0.6rem] text-slate-100/70">
