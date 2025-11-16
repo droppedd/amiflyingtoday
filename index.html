@@ -155,7 +155,7 @@
             <input id="wBag" type="number" step="0.1" value="0" disabled class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 bg-gray-100 cursor-not-allowed" />
           </label>
           <label class="text-sm">Taxi fuel (gal)
-            <input id="taxiGal" type="number" step="0.1" value="1.3" disabled class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 bg-gray-100 cursor-not-allowed" />
+            <input id="taxiGal" type="number" step="0.1" value="1.334" disabled class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 bg-gray-100 cursor-not-allowed" />
           </label>
           <label class="text-sm">Trip fuel (gal)
             <input id="tripGal" type="number" step="0.1" value="10" disabled class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 bg-gray-100 cursor-not-allowed" />
@@ -1111,7 +1111,7 @@
 <script>
 $('resetAll')?.addEventListener('click', ()=>{
   ['w12','w34','wBag','fuelStart','taxiGal','tripGal'].forEach(id=>{
-    const el = $(id); if (el && !el.disabled) el.value = id==='taxiGal' ? '1.3' : id==='tripGal' ? '10' : '0';
+    const el = $(id); if (el && !el.disabled) el.value = id==='taxiGal' ? '1.334' : id==='tripGal' ? '10' : '0';
   });
   ['depTemp','depPress','depFieldElev','depRw','depWindDir','depWindSpd','depGust',
    'arrTemp','arrPress','arrFieldElev','arrRw','arrWindDir','arrWindSpd','arrGust'].forEach(id=>{
