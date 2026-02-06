@@ -529,7 +529,21 @@
       setStatus($("toStatus"), $("cardTO"), !toOver && !toCgOut, toOver ? "over TO wt" : "CG out");
       setStatus($("ldgStatus"), $("cardLDG"), !ldgOver && !ldgCgOut, ldgOver ? "over LDG wt" : "CG out");
     }
-
+    // NEW: move worksheet baggage row above/below fuel row
+    function placeBagRowAboveFuel(yes) {
+      const bagRow = document.getElementById("rowBag");
+      const fuelRow = document.getElementById("tblFuelW")?.closest("tr");
+      if (!bagRow || !fuelRow) return;
+    
+      const parent = fuelRow.parentNode;
+      if (bagRow.parentNode !== parent) return;
+    
+      if (yes) {
+        parent.insertBefore(bagRow, fuelRow); // bag above fuel
+      } else {
+        parent.insertBefore(bagRow, fuelRow.nextSibling); // bag below fuel
+      }
+    }
     function setPayloadDisabled(disabled) {
       const ids = ["w12","w34","fuelStart","taxiGal","tripGal","wBag"];
       ids.forEach((id) => {
@@ -593,6 +607,11 @@
         $("arm12").value = 80.5;
         $("arm34").value = 118.1;
         $("armFuel").value = 95.0;
+        placeBagRowAboveFuel(false);
+    
+        // NEW: taxi fuel default for non-warrior
+        if ($("taxiGal")) $("taxiGal").value = "1.334";
+    
         if (bagLabel) bagLabel.classList.add("hidden");
         if (rowBag) rowBag.classList.add("hidden");
         setPayloadDisabled(false);
@@ -606,6 +625,11 @@
         $("arm12").value = 80.5;
         $("arm34").value = 118.1;
         $("armFuel").value = 95.0;
+        placeBagRowAboveFuel(true);
+    
+        // NEW: taxi fuel default for non-warrior
+        if ($("taxiGal")) $("taxiGal").value = "1.334";
+    
         if (bagLabel) bagLabel.classList.remove("hidden");
         if (rowBag) rowBag.classList.remove("hidden");
         setPayloadDisabled(false);
@@ -619,6 +643,11 @@
         $("arm12").value = 80.5;
         $("arm34").value = 118.1;
         $("armFuel").value = 95.0;
+        placeBagRowAboveFuel(true);
+    
+        // NEW: warrior taxi fuel default
+        if ($("taxiGal")) $("taxiGal").value = "1.1667";
+    
         if (bagLabel) bagLabel.classList.remove("hidden");
         if (rowBag) rowBag.classList.remove("hidden");
         setPayloadDisabled(false);
@@ -626,7 +655,6 @@
       }
       calc();
     }
-
     if (acType) {
       acType.addEventListener("change", (e) => {
         const v = e.target.value;
